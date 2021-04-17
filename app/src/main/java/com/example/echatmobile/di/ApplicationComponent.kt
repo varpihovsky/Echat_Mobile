@@ -12,10 +12,5 @@ interface ApplicationComponent {
     
     fun plus(mainActivityModule: MainActivityModule): MainActivityComponent
 
-    fun plus(
-        echatModelModule: EchatModelModule,
-        echatViewModelModule: EchatViewModelModule
-    ): EchatViewModelComponent
-
     fun plus(echatViewModelFactoryModule: EchatViewModelFactoryModule): EchatViewModelFactoryComponent
 }

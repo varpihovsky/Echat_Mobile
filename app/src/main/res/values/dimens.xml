@@ -7,4 +7,5 @@
     <dimen name="text_button_small_font_size">14sp</dimen>
     <dimen name="login_button_horizontal_padding">50dp</dimen>
     <dimen name="login_button_font_size">16sp</dimen>
+    <dimen name="constraint_layout_assign_res">0dp</dimen>
 </resources>
