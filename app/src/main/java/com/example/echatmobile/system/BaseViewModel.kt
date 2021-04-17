@@ -1,6 +1,8 @@
 package com.example.echatmobile.system
 
 import android.app.Application
+import android.os.Bundle
+import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +11,8 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
     val baseData: BaseData
 
     protected val baseEventLiveData = MutableLiveData<BaseEvent<BaseEventTypeInterface>>()
+
+    private val callbacks = PropertyChangeRegistry()
 
     init{
         baseData = BaseData()
@@ -50,12 +54,13 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    protected fun navigate(action: Int){
+    protected fun navigate(action: Int, data: Bundle? = null){
         baseEventLiveData.value =
             BaseEvent(
                 BaseEventType.NAVIGATE
                     .builder<NavigateEventBuilder>()
                     .setAction(action)
+                    .setNavigationData(data)
                     .build()
             )
     }

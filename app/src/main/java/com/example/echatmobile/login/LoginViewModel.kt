@@ -2,9 +2,13 @@ package com.example.echatmobile.login
 
 import android.app.Application
 import android.graphics.Color
+import android.os.Bundle
 import android.widget.Toast
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.echatmobile.R
 import com.example.echatmobile.model.EchatModel
+import com.example.echatmobile.profile.ProfileFragment.Companion.PROFILE_ID_KEY
 import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.BaseFragment.Companion.TOAST_LONG
 import com.example.echatmobile.system.BaseFragment.Companion.TOAST_SHORT
@@ -31,7 +35,13 @@ class LoginViewModel @Inject constructor(
     private fun handleLogin(login: String, password: String) {
         try {
             echatModel.authorize(login, password)
-            GlobalScope.launch(Dispatchers.Main) { makeToast("Login successful", TOAST_SHORT) }
+            echatModel.getCurrentUserProfile()?.id?.let {
+                GlobalScope.launch(Dispatchers.Main){
+                    navigate(R.id.action_loginFragment_to_profileFragment, Bundle().apply {
+                        putInt(PROFILE_ID_KEY, it)
+                    })
+                }
+            }
         } catch (e: Exception) {
             GlobalScope.launch(Dispatchers.Main) { e.message?.let { makeToast(it, TOAST_LONG) } }
         }

@@ -3,14 +3,18 @@ package com.example.echatmobile.model
 import android.util.JsonReader
 import android.util.Log
 import com.example.echatmobile.api.EchatRestAPI
+import com.example.echatmobile.model.entities.Authorization
+import com.example.echatmobile.model.entities.User
+import com.example.echatmobile.model.entities.UserWithoutPassword
 import com.example.echatmobile.system.ConnectionManager
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
+import java.lang.RuntimeException
 import javax.inject.Inject
 
 class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
-    private lateinit var authorizationKey: Any
+    private lateinit var authorizationKey: Authorization
 
     fun authorize(login: String, password: String) {
         checkInternetConnection()
@@ -20,7 +24,7 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
             throw WrongLoginOrPasswordException("Wrong login or password")
         }
         response.body()?.let {
-            authorizationKey = it.key
+            authorizationKey = it
             Log.d(DEBUG_PREFIX, "Authorization key: $authorizationKey")
         }
     }
@@ -38,6 +42,26 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
         if (!ConnectionManager().isConnected()) {
             throw NoInternetConnectionException("Please connect to the Internet")
         }
+    }
+
+    fun getCurrentUserProfile(): User? {
+        checkInternetConnection()
+        val response = echatRestAPI.getProfileByKey(authorizationKey.key).execute()
+
+        if(!response.isSuccessful){
+            throw RuntimeException(response.errorBody()?.string() + "\n" + response.message())
+        }
+        return response.body()
+    }
+
+    fun getUserProfileById(id: Int): UserWithoutPassword?{
+        checkInternetConnection()
+        val response = echatRestAPI.getProfileById(authorizationKey.key, id).execute()
+
+        if(!response.isSuccessful){
+            throw RuntimeException(response.errorBody()?.string() + "\n" + response.message())
+        }
+        return response.body()
     }
 
     companion object {

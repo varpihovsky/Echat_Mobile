@@ -77,12 +77,12 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        GlobalScope.launch {
+
             log()
 
             initViewModel()
-            GlobalScope.launch(Dispatchers.Main) { initBaseObservers() }
-        }
+            initBaseObservers()
+
     }
 
     override fun onDestroy() {
@@ -136,7 +136,7 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
     }
 
     private fun navigate(data: NavigateEventData) {
-        navigationController.navigate(data.action)
+        navigationController.navigate(data.action, data.data)
     }
 
     companion object{

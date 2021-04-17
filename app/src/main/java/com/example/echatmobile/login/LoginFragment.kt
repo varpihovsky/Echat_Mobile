@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.LoginFragmentBinding
 import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
+import com.example.echatmobile.profile.ProfileFragment.Companion.PROFILE_ID_KEY
 import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
@@ -25,13 +26,13 @@ class LoginFragment : BaseFragment<LoginViewModel, LoginFragmentBinding>(),
 
 
     override fun handleExtendedObservers(baseEvent: BaseEvent<BaseEventTypeInterface>) {
-        when(baseEvent.eventType){
+        when (baseEvent.eventType) {
             AuthorizationEvents.CHANGE_AUTHORIZATION_BUTTON -> changeLoginButton(baseEvent.eventType.data())
             else -> throw RuntimeException("Unknown event type")
         }
     }
 
-    private fun changeLoginButton(authorizationButtonEventData: ChangeAuthorizationButtonEventData){
+    private fun changeLoginButton(authorizationButtonEventData: ChangeAuthorizationButtonEventData) {
         binding.loginButton.setBackgroundColor(authorizationButtonEventData.color)
         binding.loginButton.isEnabled = authorizationButtonEventData.clickable
     }
