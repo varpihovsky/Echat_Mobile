@@ -38,7 +38,7 @@ class LoginViewModel @Inject constructor(
             echatModel.getCurrentUserProfile()?.id?.let {
                 GlobalScope.launch(Dispatchers.Main){
                     navigate(R.id.action_loginFragment_to_profileFragment, Bundle().apply {
-                        putInt(PROFILE_ID_KEY, it)
+                        putLong(PROFILE_ID_KEY, it)
                     })
                 }
             }

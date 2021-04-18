@@ -1,6 +1,7 @@
 package com.example.echatmobile.api
 
 import com.example.echatmobile.model.entities.Authorization
+import com.example.echatmobile.model.entities.ChatList
 import com.example.echatmobile.model.entities.User
 import com.example.echatmobile.model.entities.UserWithoutPassword
 import retrofit2.Call
@@ -15,18 +16,24 @@ interface EchatRestAPI {
         @Query("password") password: String
     ): Call<Authorization>
 
+    @POST("profile/register")
+    fun register(
+        @Query("login") login: String,
+        @Query("password") password: String
+    ): Call<Any>
+
     @GET("profile/get/by-key")
     fun getProfileByKey(@Query("key") key: String): Call<User>
 
     @GET("profile/get/by-id")
     fun getProfileById(
         @Query("key") key: String,
-        @Query("id") id: Int
+        @Query("id") id: Long
     ): Call<UserWithoutPassword>
 
-    @POST("profile/register")
-    fun register(
-        @Query("login") login: String,
-        @Query("password") password: String
-    ): Call<Any>
+    @GET("chat/get/by-participant")
+    fun getChatsByParticipantId(
+        @Query("key") key: String,
+        @Query("id") participantId: Long
+    ): Call<ChatList>
 }

@@ -31,6 +31,6 @@
         >
         <argument
             android:name="profileId"
-            app:argType="integer"/>
+            app:argType="long"/>
     </fragment>
 </navigation>

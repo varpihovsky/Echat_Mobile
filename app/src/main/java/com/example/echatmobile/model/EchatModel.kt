@@ -4,6 +4,7 @@ import android.util.JsonReader
 import android.util.Log
 import com.example.echatmobile.api.EchatRestAPI
 import com.example.echatmobile.model.entities.Authorization
+import com.example.echatmobile.model.entities.Chat
 import com.example.echatmobile.model.entities.User
 import com.example.echatmobile.model.entities.UserWithoutPassword
 import com.example.echatmobile.system.ConnectionManager
@@ -54,7 +55,7 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
         return response.body()
     }
 
-    fun getUserProfileById(id: Int): UserWithoutPassword?{
+    fun getUserProfileById(id: Long): UserWithoutPassword?{
         checkInternetConnection()
         val response = echatRestAPI.getProfileById(authorizationKey.key, id).execute()
 
@@ -62,6 +63,16 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
             throw RuntimeException(response.errorBody()?.string() + "\n" + response.message())
         }
         return response.body()
+    }
+
+    fun getChatsByParticipantId(id: Long): List<Chat>{
+        checkInternetConnection()
+        val response = echatRestAPI.getChatsByParticipantId(authorizationKey.key, id).execute()
+
+        if(!response.isSuccessful){
+            throw RuntimeException(response.errorBody()?.string() + "\n" + response.message())
+        }
+        return response.body()?.response ?: emptyList()
     }
 
     companion object {

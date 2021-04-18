@@ -17,7 +17,7 @@
             android:id="@+id/profile_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.user}"
+            android:text="@{viewModel.user.login}"
             android:textSize="@dimen/title_font_size"
             android:gravity="center"
             app:layout_constraintTop_toTopOf="parent"
@@ -25,6 +25,7 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/profile_room_list"
             android:layout_width="@dimen/constraint_layout_assign_res"
             android:layout_height="@dimen/constraint_layout_assign_res"
             app:layout_constraintTop_toBottomOf="@+id/profile_text"
