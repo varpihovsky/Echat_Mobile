@@ -3,6 +3,7 @@ package com.example.echatmobile.profile
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageButton
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
@@ -14,7 +15,7 @@ import com.example.echatmobile.system.BaseFragment
 import com.example.echatmobile.system.EchatApplication
 import com.example.echatmobile.system.EchatApplication.Companion.LOG_TAG
 
-class ProfileFragment: BaseFragment<ProfileViewModel, ProfileFragmentBinding>() {
+class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>() {
     private val adapter = RoomListAdapter(mutableListOf())
 
     override fun viewModel(): Class<ProfileViewModel> = ProfileViewModel::class.java
@@ -31,32 +32,38 @@ class ProfileFragment: BaseFragment<ProfileViewModel, ProfileFragmentBinding>() 
         super.onViewCreated(view, savedInstanceState)
 
         initBinding()
+        initNavigationPanelButtons()
         initObservers()
         getProfileIdData()
     }
 
-    private fun initBinding(){
+    private fun initBinding() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         binding.profileRoomList.adapter = adapter
         binding.profileRoomList.layoutManager = LinearLayoutManager(context)
     }
 
-    private fun initObservers(){
-        viewModel.data.chatList.observe(viewLifecycleOwner){
+    private fun initNavigationPanelButtons() {
+        view?.findViewById<ImageButton>(R.id.new_chat_button)?.setOnClickListener {
+            viewModel.onNewChatButtonClick()
+        }
+    }
+
+    private fun initObservers() {
+        viewModel.data.chatList.observe(viewLifecycleOwner) {
             Log.d(LOG_TAG, "Got an chat list: $it")
             adapter.roomList = it
             adapter.notifyDataSetChanged()
         }
     }
 
-    private fun getProfileIdData(){
-        arguments?.run {
-            getLong(PROFILE_ID_KEY).let { viewModel.loadProfileData(it) }
-        }
+    private fun getProfileIdData() {
+        val profileId = arguments?.getLong(PROFILE_ID_KEY)
+        viewModel.loadProfileData(profileId)
     }
 
-    companion object{
+    companion object {
         const val PROFILE_ID_KEY = "profile_id"
     }
 }

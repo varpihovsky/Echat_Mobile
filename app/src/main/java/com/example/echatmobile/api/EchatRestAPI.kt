@@ -1,9 +1,6 @@
 package com.example.echatmobile.api
 
-import com.example.echatmobile.model.entities.Authorization
-import com.example.echatmobile.model.entities.ChatList
-import com.example.echatmobile.model.entities.User
-import com.example.echatmobile.model.entities.UserWithoutPassword
+import com.example.echatmobile.model.entities.*
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -36,4 +33,10 @@ interface EchatRestAPI {
         @Query("key") key: String,
         @Query("id") participantId: Long
     ): Call<ChatList>
+
+    @POST("chat/create")
+    fun createChat(
+        @Query("key") key: String,
+        @Query("name") name: String
+    ): Call<Chat>
 }

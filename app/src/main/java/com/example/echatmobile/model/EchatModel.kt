@@ -75,6 +75,16 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
         return response.body()?.response ?: emptyList()
     }
 
+    fun createChat(name: String): Chat?{
+        checkInternetConnection()
+        val response = echatRestAPI.createChat(authorizationKey.key, name).execute()
+
+        if(!response.isSuccessful){
+            throw RuntimeException(response.errorBody()?.string() + "\n" + response.message())
+        }
+        return response.body()
+    }
+
     companion object {
         private const val DEBUG_PREFIX = "Application/Model"
     }

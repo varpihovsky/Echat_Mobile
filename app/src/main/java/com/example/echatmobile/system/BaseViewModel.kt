@@ -14,7 +14,7 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
 
     private val callbacks = PropertyChangeRegistry()
 
-    init{
+    init {
         baseData = BaseData()
     }
 
@@ -24,38 +24,38 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
     }
 
     protected fun makeToast(text: String, toastLength: Int) {
-        baseEventLiveData.value =
+        baseEventLiveData.postValue(
             BaseEvent(
                 BaseEventType.TOAST_STRING
                     .builder<ToastStringBuilder>()
                     .setText(text)
                     .setLength(toastLength).build()
-            )
+            ))
     }
 
     protected fun makeToast(resource: Int, toastLength: Int) {
-        baseEventLiveData.value =
+        baseEventLiveData.postValue(
             BaseEvent(
                 BaseEventType.TOAST_RESOURCE
                     .builder<ToastResourceBuilder>()
                     .setResource(resource)
                     .setLength(toastLength)
                     .build()
-            )
+            ))
     }
 
-    protected fun hideKeyboard(){
+    protected fun hideKeyboard() {
         baseEventLiveData.value = BaseEvent(BaseEventType.HIDE_KEYBOARD)
     }
 
-    fun baseInputFieldRefocused(focused: Boolean){
-        if(!focused) {
+    fun baseInputFieldRefocused(focused: Boolean) {
+        if (!focused) {
             hideKeyboard()
         }
     }
 
-    protected fun navigate(action: Int, data: Bundle? = null){
-        baseEventLiveData.value =
+    protected fun navigate(action: Int, data: Bundle? = null) {
+        baseEventLiveData.postValue(
             BaseEvent(
                 BaseEventType.NAVIGATE
                     .builder<NavigateEventBuilder>()
@@ -63,5 +63,6 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
                     .setNavigationData(data)
                     .build()
             )
+        )
     }
 }

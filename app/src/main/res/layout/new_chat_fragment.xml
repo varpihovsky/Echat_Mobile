@@ -3,7 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+    tools:context=".new_chat.NewChatFragment">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.echatmobile.new_chat.NewChatViewModel" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -16,8 +22,8 @@
             android:id="@+id/new_chat_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:textSize="32sp"
+            android:layout_marginBottom="@dimen/input_form_margin_bottom"
+            android:textSize="@dimen/title_font_size"
             android:textColor="@color/black"
             android:text="New Chat"
             app:layout_constraintVertical_chainStyle="packed"
@@ -30,9 +36,9 @@
             android:id="@+id/new_chat_name_field"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:paddingStart="50dp"
-            android:paddingEnd="50dp"
+            android:layout_marginBottom="@dimen/input_form_margin_bottom"
+            android:paddingStart="@dimen/new_chat_form_field_padding"
+            android:paddingEnd="@dimen/new_chat_form_field_padding"
             android:hint="name"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -43,13 +49,18 @@
             android:id="@+id/new_chat_create_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="40dp"
-            android:paddingEnd="40dp"
+            android:paddingStart="@dimen/new_chat_create_button_padding"
+            android:paddingEnd="@dimen/new_chat_create_button_padding"
+            android:onClick="@{() -> viewModel.onCreateButtonClick(newChatNameField.getText().toString())}"
             android:text="CREATE"
             app:layout_constraintTop_toBottomOf="@+id/new_chat_name_field"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <include
+            android:id="@+id/navigation_panel_new_chat"
+            layout="@layout/navigation_panel"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

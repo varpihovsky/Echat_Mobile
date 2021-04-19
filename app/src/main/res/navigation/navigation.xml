@@ -29,8 +29,16 @@
         android:name="com.example.echatmobile.profile.ProfileFragment"
         android:label="ProfileFragment"
         >
-        <argument
-            android:name="profileId"
-            app:argType="long"/>
+        <action
+            android:id="@+id/action_profileFragment_to_newChatFragment"
+            app:destination="@id/newChatFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newChatFragment"
+        android:name="com.example.echatmobile.new_chat.NewChatFragment"
+        android:label="NewChatFragment" >
+        <action
+            android:id="@+id/action_newChatFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
 </navigation>

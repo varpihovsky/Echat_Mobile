@@ -31,7 +31,11 @@
             app:layout_constraintTop_toBottomOf="@+id/profile_text"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toTopOf="@+id/navigation_panel_profile"/>
+
+        <include
+            android:id="@+id/navigation_panel_profile"
+            layout="@layout/navigation_panel" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

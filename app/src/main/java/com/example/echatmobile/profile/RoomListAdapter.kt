@@ -21,7 +21,10 @@ class RoomListAdapter(var roomList: List<Chat>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding?.roomItemTitle?.text = roomList[position].name
-        //holder.binding?.roomItemDescription?.text = roomList[position].description
+
+        if(position != roomList.size - 1){
+            holder.binding?.roomItemBorderBottom?.visibility = View.INVISIBLE
+        }
     }
 
     override fun getItemCount(): Int = roomList.size

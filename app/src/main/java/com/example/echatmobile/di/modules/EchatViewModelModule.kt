@@ -4,6 +4,7 @@ import android.app.Application
 import com.example.echatmobile.di.scopes.ViewModelScope
 import com.example.echatmobile.login.LoginViewModel
 import com.example.echatmobile.model.EchatModel
+import com.example.echatmobile.new_chat.NewChatViewModel
 import com.example.echatmobile.profile.ProfileViewModel
 import com.example.echatmobile.register.RegisterViewModel
 import dagger.Module
@@ -22,4 +23,8 @@ class EchatViewModelModule {
     @ViewModelScope
     @Provides
     fun getProfileViewModel(application: Application, echatModel: EchatModel) = ProfileViewModel(application, echatModel)
+
+    @ViewModelScope
+    @Provides
+    fun getNewChatViewModel(application: Application, echatModel: EchatModel) = NewChatViewModel(application, echatModel)
 }

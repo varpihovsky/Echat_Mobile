@@ -38,12 +38,32 @@ class ProfileViewModel @Inject constructor(
         val chatList: LiveData<List<Chat>> = this@ProfileViewModel.chatList
     }
 
-    fun loadProfileData(profileId: Long) {
+    fun loadProfileData(profileId: Long?) {
         GlobalScope.launch(Dispatchers.IO) {
-            echatModel.getUserProfileById(profileId)?.let {
-                user.postValue(it)
-                chatList.postValue(echatModel.getChatsByParticipantId(it.id))
+            if(profileId == null){
+                handleCurrentProfile()
+            } else{
+                handleProfile(profileId)
             }
         }
+    }
+
+    private fun handleCurrentProfile(){
+        echatModel.getCurrentUserProfile()?.let {
+            UserWithoutPassword(it.id, it.login)
+        }?.let { postData(it) }
+    }
+
+    private fun handleProfile(profileId: Long){
+        echatModel.getUserProfileById(profileId)?.let { postData(it) }
+    }
+
+    private fun postData(userWithoutPassword: UserWithoutPassword){
+        user.postValue(userWithoutPassword)
+        chatList.postValue(echatModel.getChatsByParticipantId(userWithoutPassword.id))
+    }
+
+    fun onNewChatButtonClick(){
+        navigate(R.id.action_profileFragment_to_newChatFragment)
     }
 }
