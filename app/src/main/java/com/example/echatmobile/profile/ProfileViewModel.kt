@@ -1,21 +1,15 @@
 package com.example.echatmobile.profile
 
 import android.app.Application
-import android.util.Log
-import androidx.databinding.BaseObservable
-import androidx.databinding.Bindable
-import androidx.databinding.Observable
-import androidx.databinding.PropertyChangeRegistry
-import androidx.lifecycle.LifecycleObserver
+import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.echatmobile.R
+import com.example.echatmobile.chat.ChatFragment
 import com.example.echatmobile.model.EchatModel
 import com.example.echatmobile.model.entities.Chat
-import com.example.echatmobile.model.entities.User
 import com.example.echatmobile.model.entities.UserWithoutPassword
 import com.example.echatmobile.system.BaseViewModel
-import com.example.echatmobile.system.EchatApplication.Companion.LOG_TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -40,30 +34,36 @@ class ProfileViewModel @Inject constructor(
 
     fun loadProfileData(profileId: Long?) {
         GlobalScope.launch(Dispatchers.IO) {
-            if(profileId == null){
+            if (profileId == null) {
                 handleCurrentProfile()
-            } else{
+            } else {
                 handleProfile(profileId)
             }
         }
     }
 
-    private fun handleCurrentProfile(){
+    private fun handleCurrentProfile() {
         echatModel.getCurrentUserProfile()?.let {
             UserWithoutPassword(it.id, it.login)
         }?.let { postData(it) }
     }
 
-    private fun handleProfile(profileId: Long){
+    private fun handleProfile(profileId: Long) {
         echatModel.getUserProfileById(profileId)?.let { postData(it) }
     }
 
-    private fun postData(userWithoutPassword: UserWithoutPassword){
+    private fun postData(userWithoutPassword: UserWithoutPassword) {
         user.postValue(userWithoutPassword)
         chatList.postValue(echatModel.getChatsByParticipantId(userWithoutPassword.id))
     }
 
-    fun onNewChatButtonClick(){
+    fun onNewChatButtonClick() {
         navigate(R.id.action_profileFragment_to_newChatFragment)
+    }
+
+    fun onChatItemClick(chat: Chat) {
+        navigate(
+            R.id.action_profileFragment_to_chatFragment,
+            Bundle().apply { putLong(ChatFragment.CHAT_ID_ARGUMENT, chat.id) })
     }
 }

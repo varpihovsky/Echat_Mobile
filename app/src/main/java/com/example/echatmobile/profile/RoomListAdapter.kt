@@ -9,7 +9,7 @@ import com.example.echatmobile.R
 import com.example.echatmobile.databinding.RoomItemBinding
 import com.example.echatmobile.model.entities.Chat
 
-class RoomListAdapter(var roomList: List<Chat>) :
+class RoomListAdapter(var roomList: List<Chat>, private val onItemClickCallback: (Chat) -> Unit) :
     RecyclerView.Adapter<RoomListAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -22,8 +22,12 @@ class RoomListAdapter(var roomList: List<Chat>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding?.roomItemTitle?.text = roomList[position].name
 
-        if(position != roomList.size - 1){
+        if (position != roomList.size - 1) {
             holder.binding?.roomItemBorderBottom?.visibility = View.INVISIBLE
+        }
+
+        holder.binding?.root?.setOnClickListener {
+            onItemClickCallback.invoke(roomList[holder.adapterPosition])
         }
     }
 

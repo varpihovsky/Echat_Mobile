@@ -39,4 +39,31 @@ interface EchatRestAPI {
         @Query("key") key: String,
         @Query("name") name: String
     ): Call<Chat>
+
+    @GET("chat/message/get-history")
+    fun getMessageHistory(
+        @Query("key") key: String,
+        @Query("chat-id") chatId: Long
+    ): Call<MessageList>
+
+    @POST("chat/message/write")
+    fun writeMessage(
+        @Query("key") key: String,
+        @Query("chat-id") chatId: Long,
+        @Query("text") text: String,
+        @Query(value = "to-message-id") toMessageId: Long
+    ): Call<Any>
+
+    @POST("chat/message/write")
+    fun writeMessage(
+        @Query("key") key: String,
+        @Query("chat-id") chatId: Long,
+        @Query("text") text: String
+    ): Call<Any>
+
+    @POST("chat/message/read")
+    fun setMessageRead(
+        @Query("key") key: String,
+        @Query("id") messageId: Long
+    ): Call<Any>
 }

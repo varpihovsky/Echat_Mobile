@@ -2,17 +2,17 @@ package com.example.echatmobile.system
 
 import android.app.Application
 import android.os.Bundle
-import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application) {
     val baseData: BaseData
 
     protected val baseEventLiveData = MutableLiveData<BaseEvent<BaseEventTypeInterface>>()
-
-    private val callbacks = PropertyChangeRegistry()
 
     init {
         baseData = BaseData()
@@ -24,28 +24,36 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
     }
 
     protected fun makeToast(text: String, toastLength: Int) {
-        baseEventLiveData.postValue(
-            BaseEvent(
-                BaseEventType.TOAST_STRING
-                    .builder<ToastStringBuilder>()
-                    .setText(text)
-                    .setLength(toastLength).build()
-            ))
+        GlobalScope.launch(Dispatchers.Main) {
+            baseEventLiveData.value =
+                BaseEvent(
+                    BaseEventType.TOAST_STRING
+                        .builder<ToastStringBuilder>()
+                        .setText(text)
+                        .setLength(toastLength).build()
+                )
+            resetBaseEventLiveData()
+        }
     }
 
+
     protected fun makeToast(resource: Int, toastLength: Int) {
-        baseEventLiveData.postValue(
-            BaseEvent(
-                BaseEventType.TOAST_RESOURCE
-                    .builder<ToastResourceBuilder>()
-                    .setResource(resource)
-                    .setLength(toastLength)
-                    .build()
-            ))
+        GlobalScope.launch(Dispatchers.Main) {
+            baseEventLiveData.value =
+                BaseEvent(
+                    BaseEventType.TOAST_RESOURCE
+                        .builder<ToastResourceBuilder>()
+                        .setResource(resource)
+                        .setLength(toastLength)
+                        .build()
+                )
+            resetBaseEventLiveData()
+        }
     }
 
     protected fun hideKeyboard() {
         baseEventLiveData.value = BaseEvent(BaseEventType.HIDE_KEYBOARD)
+        resetBaseEventLiveData()
     }
 
     fun baseInputFieldRefocused(focused: Boolean) {
@@ -55,14 +63,20 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
     }
 
     protected fun navigate(action: Int, data: Bundle? = null) {
-        baseEventLiveData.postValue(
-            BaseEvent(
-                BaseEventType.NAVIGATE
-                    .builder<NavigateEventBuilder>()
-                    .setAction(action)
-                    .setNavigationData(data)
-                    .build()
-            )
-        )
+        GlobalScope.launch(Dispatchers.Main) {
+            baseEventLiveData.value =
+                BaseEvent(
+                    BaseEventType.NAVIGATE
+                        .builder<NavigateEventBuilder>()
+                        .setAction(action)
+                        .setNavigationData(data)
+                        .build()
+                )
+            resetBaseEventLiveData()
+        }
+    }
+
+    protected fun resetBaseEventLiveData() {
+        baseEventLiveData.value = BaseEvent(BaseEventType.EMPTY)
     }
 }

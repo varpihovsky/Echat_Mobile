@@ -1,6 +1,7 @@
 package com.example.echatmobile.di.modules
 
 import android.app.Application
+import com.example.echatmobile.chat.ChatViewModelFactory
 import com.example.echatmobile.login.LoginViewModelFactory
 import com.example.echatmobile.new_chat.NewChatViewModelFactory
 import com.example.echatmobile.profile.ProfileViewModelFactory
@@ -20,5 +21,9 @@ class EchatViewModelFactoryModule {
     fun provideProfileFactory(application: Application) = ProfileViewModelFactory(application)
 
     @Provides
-    fun provideNewChatViewModelFactory(application: Application) = NewChatViewModelFactory(application)
+    fun provideNewChatViewModelFactory(application: Application) =
+        NewChatViewModelFactory(application)
+
+    @Provides
+    fun provideChatViewModelFactory(application: Application) = ChatViewModelFactory(application)
 }

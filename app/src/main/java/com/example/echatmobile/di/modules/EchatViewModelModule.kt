@@ -1,6 +1,7 @@
 package com.example.echatmobile.di.modules
 
 import android.app.Application
+import com.example.echatmobile.chat.ChatViewModel
 import com.example.echatmobile.di.scopes.ViewModelScope
 import com.example.echatmobile.login.LoginViewModel
 import com.example.echatmobile.model.EchatModel
@@ -18,13 +19,21 @@ class EchatViewModelModule {
 
     @ViewModelScope
     @Provides
-    fun getRegisterViewModel(application: Application, echatModel: EchatModel) = RegisterViewModel(application, echatModel)
+    fun getRegisterViewModel(application: Application, echatModel: EchatModel) =
+        RegisterViewModel(application, echatModel)
 
     @ViewModelScope
     @Provides
-    fun getProfileViewModel(application: Application, echatModel: EchatModel) = ProfileViewModel(application, echatModel)
+    fun getProfileViewModel(application: Application, echatModel: EchatModel) =
+        ProfileViewModel(application, echatModel)
 
     @ViewModelScope
     @Provides
-    fun getNewChatViewModel(application: Application, echatModel: EchatModel) = NewChatViewModel(application, echatModel)
+    fun getNewChatViewModel(application: Application, echatModel: EchatModel) =
+        NewChatViewModel(application, echatModel)
+
+    @ViewModelScope
+    @Provides
+    fun getChatViewModel(application: Application, echatModel: EchatModel) =
+        ChatViewModel(application, echatModel)
 }

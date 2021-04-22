@@ -1,20 +1,15 @@
 package com.example.echatmobile.system
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.ContextWrapper
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
-import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.navigation.NavController
@@ -22,12 +17,7 @@ import com.example.echatmobile.MainActivity
 import com.example.echatmobile.di.modules.BaseFragmentModule
 import com.example.echatmobile.di.modules.MainActivityModule
 import com.example.echatmobile.system.EchatApplication.Companion.LOG_TAG
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.lang.RuntimeException
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment() {
     protected val navigationController: NavController
@@ -41,12 +31,12 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
     protected lateinit var viewModel: T
     protected lateinit var binding: B
 
+    private var _nav: NavController? = null
+    private var isNavControllerInjected = false
+
     protected abstract fun viewModel(): Class<T>
     protected abstract fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory?
     protected abstract fun layoutId(): Int
-
-    private var _nav: NavController? = null
-    private var isNavControllerInjected = false
 
     @Inject
     fun injectNavController(navController: NavController) {
@@ -77,12 +67,8 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-            log()
-
-            initViewModel()
-            initBaseObservers()
-
+        initViewModel()
+        initBaseObservers()
     }
 
     override fun onDestroy() {
@@ -105,6 +91,8 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
                 BaseEventType.TOAST_RESOURCE -> showToastResource(it.eventType.data())
                 BaseEventType.TOAST_STRING -> showToastString(it.eventType.data())
                 BaseEventType.NAVIGATE -> navigate(it.eventType.data())
+                BaseEventType.EMPTY -> {
+                }
                 else -> handleExtendedObservers(it)
             }
         }
@@ -121,10 +109,6 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
             .inject(this as BaseFragment<BaseViewModel, ViewDataBinding>)
     }
 
-    private fun log() {
-        Log.d(LOG_TAG, "Activity created successfully")
-    }
-
     @SuppressLint("ShowToast")
     private fun showToastResource(data: ToastResourceData) {
         Toast.makeText(context, resources.getString(data.resource), data.length).show()
@@ -139,7 +123,7 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
         navigationController.navigate(data.action, data.data)
     }
 
-    companion object{
+    companion object {
         const val TOAST_SHORT = Toast.LENGTH_SHORT
         const val TOAST_LONG = Toast.LENGTH_LONG
     }

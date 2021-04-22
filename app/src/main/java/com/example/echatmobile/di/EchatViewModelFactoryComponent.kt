@@ -1,5 +1,6 @@
 package com.example.echatmobile.di
 
+import com.example.echatmobile.chat.ChatViewModelFactory
 import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
 import com.example.echatmobile.login.LoginViewModelFactory
 import com.example.echatmobile.new_chat.NewChatViewModelFactory
@@ -16,4 +17,6 @@ interface EchatViewModelFactoryComponent {
     fun getProfileViewModelFactory(): ProfileViewModelFactory
 
     fun getNewChatViewModelFactory(): NewChatViewModelFactory
+
+    fun getChatViewModelFactory(): ChatViewModelFactory
 }

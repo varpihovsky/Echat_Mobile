@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ProfileFragmentBinding
 import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
+import com.example.echatmobile.model.entities.Chat
 import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
@@ -16,7 +17,7 @@ import com.example.echatmobile.system.EchatApplication
 import com.example.echatmobile.system.EchatApplication.Companion.LOG_TAG
 
 class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>() {
-    private val adapter = RoomListAdapter(mutableListOf())
+    private val adapter = RoomListAdapter(mutableListOf(), this::onChatItemClick)
 
     override fun viewModel(): Class<ProfileViewModel> = ProfileViewModel::class.java
     override fun layoutId(): Int = R.layout.profile_fragment
@@ -61,6 +62,10 @@ class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>()
     private fun getProfileIdData() {
         val profileId = arguments?.getLong(PROFILE_ID_KEY)
         viewModel.loadProfileData(profileId)
+    }
+
+    private fun onChatItemClick(chat: Chat) {
+        viewModel.onChatItemClick(chat)
     }
 
     companion object {
