@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ChatFragmentBinding
 import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
-import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
 import com.example.echatmobile.system.EchatApplication
@@ -16,8 +15,8 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
     private val dataList = mutableListOf<MessageDTO>()
 
     override fun viewModel(): Class<ChatViewModel> = ChatViewModel::class.java
-    override fun handleExtendedObservers(baseEvent: BaseEvent<BaseEventTypeInterface>) {
-        when (baseEvent.eventType) {
+    override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
+        when (baseEvent) {
             is ClearChatFieldEvent -> binding.chatTextField.setText("")
         }
     }
@@ -69,6 +68,11 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
         dataList.removeAll { true }
         dataList.addAll(messages)
         binding.chatMessageList.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        viewModel.stopBackgroundThreads()
     }
 
     companion object {

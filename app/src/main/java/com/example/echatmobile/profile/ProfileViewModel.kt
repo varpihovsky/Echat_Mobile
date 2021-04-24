@@ -20,13 +20,9 @@ class ProfileViewModel @Inject constructor(
     private val echatModel: EchatModel
 ) :
     BaseViewModel(application) {
-    val data: Data
+    val data by lazy { Data() }
     val user = MutableLiveData<UserWithoutPassword>()
     private val chatList = MutableLiveData<List<Chat>>()
-
-    init {
-        data = Data()
-    }
 
     inner class Data {
         val chatList: LiveData<List<Chat>> = this@ProfileViewModel.chatList

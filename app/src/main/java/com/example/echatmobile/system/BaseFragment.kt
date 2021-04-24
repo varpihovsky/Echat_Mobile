@@ -2,7 +2,6 @@ package com.example.echatmobile.system
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import androidx.navigation.NavController
 import com.example.echatmobile.MainActivity
 import com.example.echatmobile.di.modules.BaseFragmentModule
 import com.example.echatmobile.di.modules.MainActivityModule
-import com.example.echatmobile.system.EchatApplication.Companion.LOG_TAG
 import javax.inject.Inject
 
 abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment() {
@@ -37,6 +35,15 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
     protected abstract fun viewModel(): Class<T>
     protected abstract fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory?
     protected abstract fun layoutId(): Int
+    protected abstract fun handleExtendedObservers(baseEvent: BaseEventTypeInterface)
+
+    private fun inject() {
+        EchatApplication.instance
+            .daggerApplicationComponent
+            .plus(MainActivityModule(activity as MainActivity))
+            .plus(BaseFragmentModule())
+            .inject(this as BaseFragment<BaseViewModel, ViewDataBinding>)
+    }
 
     @Inject
     fun injectNavController(navController: NavController) {
@@ -85,28 +92,21 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
     }
 
     private fun initBaseObservers() {
-        viewModel.baseData.baseEventLiveData.observe(viewLifecycleOwner) {
-            when (it.eventType) {
+        viewModel.baseData.baseEventLiveData.observe(viewLifecycleOwner) { handleBaseEvent(it) }
+    }
+
+    private fun handleBaseEvent(baseEvent: BaseEvent<BaseEventTypeInterface>) {
+        baseEvent.get().let {
+            when (it) {
                 BaseEventType.HIDE_KEYBOARD -> view?.let { view -> activity?.hideKeyboard(view) }
-                BaseEventType.TOAST_RESOURCE -> showToastResource(it.eventType.data())
-                BaseEventType.TOAST_STRING -> showToastString(it.eventType.data())
-                BaseEventType.NAVIGATE -> navigate(it.eventType.data())
+                BaseEventType.TOAST_RESOURCE -> showToastResource(it.data())
+                BaseEventType.TOAST_STRING -> showToastString(it.data())
+                BaseEventType.NAVIGATE -> navigate(it.data())
                 BaseEventType.EMPTY -> {
                 }
                 else -> handleExtendedObservers(it)
             }
         }
-    }
-
-    abstract fun handleExtendedObservers(baseEvent: BaseEvent<BaseEventTypeInterface>)
-
-    private fun inject() {
-        Log.d(LOG_TAG, "activity state: ${activity?.lifecycle?.currentState}")
-        EchatApplication.instance
-            .daggerApplicationComponent
-            .plus(MainActivityModule(activity as MainActivity))
-            .plus(BaseFragmentModule())
-            .inject(this as BaseFragment<BaseViewModel, ViewDataBinding>)
     }
 
     @SuppressLint("ShowToast")

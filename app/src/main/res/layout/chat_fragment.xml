@@ -19,27 +19,43 @@
             android:id="@+id/chat_message_list"
             android:layout_width="@dimen/constraint_layout_assign_res"
             android:layout_height="@dimen/constraint_layout_assign_res"
-            app:layout_constraintBottom_toTopOf="@+id/chat_text_field"
+            app:layout_constraintBottom_toTopOf="@+id/chat_input_field"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/chat_text_field"
-            android:layout_width="@dimen/constraint_layout_assign_res"
-            android:layout_height="50dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/chat_input_field"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@color/chat_border_transparent_black"
+            android:elevation="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/chat_send_button"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chat_message_list">
 
-        <Button
-            android:id="@+id/chat_send_button"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:onClick="@{() -> viewModel.onSendButtonClick(chatTextField.getText().toString())}"
-            android:text="@string/chat_send_button_text"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <EditText
+                android:id="@+id/chat_text_field"
+                android:layout_width="@dimen/constraint_layout_assign_res"
+                android:layout_height="50dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/chat_send_button"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Button
+                android:id="@+id/chat_send_button"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:onClick="@{() -> viewModel.onSendButtonClick(chatTextField.getText().toString())}"
+                android:text="@string/chat_send_button_text"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/chat_text_field" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

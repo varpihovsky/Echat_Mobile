@@ -44,6 +44,7 @@ class ChatAdapter(
             } else {
                 ""
             }
+        holder.binding?.chatMessageDate?.text = dataList[position].created.subSequence(0, 10)
     }
 
     override fun onViewAttachedToWindow(holder: ViewHolder) {

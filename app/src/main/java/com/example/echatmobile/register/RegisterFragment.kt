@@ -8,11 +8,9 @@ import com.example.echatmobile.databinding.RegisterFragmentBinding
 import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
 import com.example.echatmobile.login.AuthorizationEvents
 import com.example.echatmobile.login.ChangeAuthorizationButtonEventData
-import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
 import com.example.echatmobile.system.EchatApplication
-import java.lang.RuntimeException
 
 class RegisterFragment : BaseFragment<RegisterViewModel, RegisterFragmentBinding>(),
     View.OnFocusChangeListener {
@@ -24,9 +22,9 @@ class RegisterFragment : BaseFragment<RegisterViewModel, RegisterFragmentBinding
             .plus(EchatViewModelFactoryModule())
             .getRegisterViewModelFactory()
 
-    override fun handleExtendedObservers(baseEvent: BaseEvent<BaseEventTypeInterface>) {
-        when (baseEvent.eventType) {
-            AuthorizationEvents.CHANGE_AUTHORIZATION_BUTTON -> changeRegisterButton(baseEvent.eventType.data())
+    override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
+        when (baseEvent) {
+            AuthorizationEvents.CHANGE_AUTHORIZATION_BUTTON -> changeRegisterButton(baseEvent.data())
             else -> throw RuntimeException("Event doesn't supported")
         }
     }
@@ -40,7 +38,6 @@ class RegisterFragment : BaseFragment<RegisterViewModel, RegisterFragmentBinding
     private fun initListeners() {
         binding.registerEditTextPassword.onFocusChangeListener = this
         binding.registerEditTextUsername.onFocusChangeListener = this
-        binding.registerBackButton.setOnClickListener { viewModel.onBackButtonClick() }
         binding.registerButton.setOnClickListener {
             viewModel.onRegisterButtonClick(
                 binding.registerEditTextUsername.text.toString(),

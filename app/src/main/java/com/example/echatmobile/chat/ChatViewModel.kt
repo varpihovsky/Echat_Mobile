@@ -9,6 +9,7 @@ import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.BaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.properties.Delegates
@@ -21,6 +22,7 @@ class ChatViewModel @Inject constructor(
     val data by lazy { Data() }
     private val messagesLiveData = MutableLiveData<List<MessageDTO>>()
     private var chatId by Delegates.notNull<Long>()
+    private var areNotBackgroundThreadsRunning = false
 
     inner class Data {
         val messagesLiveData: LiveData<List<MessageDTO>> = this@ChatViewModel.messagesLiveData
@@ -29,6 +31,13 @@ class ChatViewModel @Inject constructor(
     fun loadChat(chatId: Long) {
         this.chatId = chatId
         GlobalScope.launch(Dispatchers.IO) { handleChatLoading(chatId) }
+        areNotBackgroundThreadsRunning = false
+        GlobalScope.launch {
+            while (!areNotBackgroundThreadsRunning) {
+                delay(500)
+                handleChatLoading(chatId)
+            }
+        }
     }
 
     private fun handleChatLoading(chatId: Long) {
@@ -62,5 +71,9 @@ class ChatViewModel @Inject constructor(
 
     fun onMessageRead(messageDTO: MessageDTO) {
         echatModel.setMessageRead(messageDTO.id)
+    }
+
+    fun stopBackgroundThreads() {
+        areNotBackgroundThreadsRunning = true
     }
 }

@@ -5,110 +5,138 @@
     tools:context=".login.LoginFragment">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.example.echatmobile.login.LoginViewModel" />
 
-        <variable
-            name="fragment"
-            type="com.example.echatmobile.login.LoginFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:layout_height="match_parent">
 
-
-        <TextView
-            android:id="@+id/logotype"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/input_form_margin_bottom"
-            android:text="@string/app_name"
-            android:textColor="@color/black"
-            android:textSize="@dimen/title_font_size"
-            app:layout_constraintBottom_toTopOf="@+id/edit_text_username"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
-
-        <EditText
-            android:id="@+id/edit_text_username"
-            android:layout_width="@dimen/input_form_field_width"
-            android:layout_height="@dimen/input_form_field_height"
-            android:layout_marginBottom="@dimen/input_form_margin_bottom"
-            android:hint="@string/username_field_hint"
-            android:textAlignment="center"
-            android:focusedByDefault="false"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            app:layout_constraintBottom_toTopOf="@+id/edit_text_password"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/logotype" />
-
-        <EditText
-            android:id="@+id/edit_text_password"
-            android:layout_width="@dimen/input_form_field_width"
-            android:layout_height="@dimen/input_form_field_height"
-            android:layout_marginBottom="@dimen/input_form_margin_bottom"
-            android:hint="@string/password_field_hint"
-            android:focusedByDefault="false"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:textAlignment="center"
-            android:inputType="textPassword"
-            app:layout_constraintBottom_toTopOf="@+id/forgot_password_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_text_username" />
-
-        <TextView
-            android:id="@+id/forgot_password_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/input_form_margin_bottom"
-            android:clickable="true"
-            android:text="Forgot password?"
-            android:textSize="@dimen/text_button_small_font_size"
-            app:layout_constraintBottom_toTopOf="@+id/login_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.75"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_text_password" />
-
-        <Button
-            android:id="@+id/login_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/input_form_margin_bottom"
-            android:paddingStart="@dimen/login_button_horizontal_padding"
-            android:paddingEnd="@dimen/login_button_horizontal_padding"
-            android:text="@string/login_button_text"
-            android:textSize="@dimen/input_form_button_font_size"
-            app:layout_constraintBottom_toTopOf="@+id/go_to_register_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/forgot_password_button" />
-
-        <TextView
-            android:id="@+id/go_to_register_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/input_form_margin_bottom"
-            android:clickable="true"
-            android:text="Register"
-            android:textSize="@dimen/text_button_small_font_size"
+            app:cardCornerRadius="@dimen/input_card_corner_radius"
+            app:cardElevation="@dimen/card_elevation"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/login_button" />
+            app:layout_constraintTop_toTopOf="parent">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:padding="@dimen/input_card_padding">
+
+
+                <TextView
+                    android:id="@+id/logotype"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/input_form_margin_bottom"
+                    android:text="@string/app_name"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/title_font_size"
+                    app:layout_constraintBottom_toTopOf="@+id/edit_text_username_input_layout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/edit_text_username_input_layout"
+                    android:layout_width="@dimen/input_form_field_width"
+                    android:layout_height="@dimen/input_form_field_height"
+                    android:layout_marginBottom="@dimen/input_form_margin_bottom"
+                    android:hint="@string/username_field_hint"
+                    app:layout_constraintBottom_toTopOf="@+id/edit_text_password_input_layout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/logotype">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_text_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/edit_text_password_input_layout"
+                    android:layout_width="@dimen/input_form_field_width"
+                    android:layout_height="@dimen/input_form_field_height"
+                    android:layout_marginBottom="@dimen/input_form_margin_bottom"
+                    android:hint="@string/password_field_hint"
+                    app:layout_constraintBottom_toTopOf="@+id/forgot_password_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/edit_text_username_input_layout"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_text_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="textPassword" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <TextView
+                    android:id="@+id/forgot_password_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/input_form_margin_bottom"
+                    android:clickable="true"
+                    android:text="@string/forgot_password_button_text"
+                    android:textSize="@dimen/text_button_small_font_size"
+                    app:layout_constraintBottom_toTopOf="@+id/login_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.75"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/edit_text_password_input_layout" />
+
+                <Button
+                    android:id="@+id/login_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/input_form_margin_bottom"
+                    android:onClick="@{() -> viewModel.onLoginButtonClick(editTextUsername.getText().toString(), editTextPassword.getText().toString())}"
+                    android:paddingStart="@dimen/login_button_horizontal_padding"
+                    android:paddingEnd="@dimen/login_button_horizontal_padding"
+                    android:text="@string/login_button_text"
+                    android:textSize="@dimen/input_form_button_font_size"
+                    app:layout_constraintBottom_toTopOf="@+id/go_to_register_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/forgot_password_button" />
+
+                <TextView
+                    android:id="@+id/go_to_register_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/input_form_margin_bottom"
+                    android:clickable="true"
+                    android:onClick="@{() -> viewModel.onRegisterButtonClick()}"
+                    android:text="@string/register_button_text"
+                    android:textSize="@dimen/text_button_small_font_size"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/login_button" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </layout>

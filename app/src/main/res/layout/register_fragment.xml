@@ -7,76 +7,95 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/register_back_button"
-            android:layout_width="@dimen/register_back_button_res"
-            android:layout_height="@dimen/register_back_button_res"
-            android:src="@drawable/ic_baseline_arrow_back_24"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:background="@color/empty_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-
-        <TextView
-            android:id="@+id/register_logotype"
+        <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/input_form_margin_bottom"
-            android:text="Registration"
-            android:textSize="@dimen/title_font_size"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/register_edit_text_username"
-            app:layout_constraintVertical_chainStyle="packed"/>
-
-        <EditText
-            android:id="@+id/register_edit_text_username"
-            android:layout_width="@dimen/input_form_field_width"
-            android:layout_height="@dimen/input_form_field_height"
-            android:layout_marginBottom="@dimen/input_form_margin_bottom"
-            android:hint="username"
-            android:textAlignment="center"
-            app:layout_constraintTop_toBottomOf="@+id/register_logotype"
-            app:layout_constraintBottom_toTopOf="@+id/register_edit_text_password"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <EditText
-            android:id="@+id/register_edit_text_password"
-            android:layout_width="@dimen/input_form_field_width"
-            android:layout_height="@dimen/input_form_field_height"
-            android:layout_marginBottom="@dimen/input_form_margin_bottom"
-            android:hint="password"
-            android:textAlignment="center"
-            android:inputType="textPassword"
-            app:layout_constraintTop_toBottomOf="@+id/register_edit_text_username"
-            app:layout_constraintBottom_toTopOf="@+id/register_button"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <Button
-            android:id="@+id/register_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/input_form_margin_bottom"
-            android:text="@string/register_button_text"
-            android:textSize="@dimen/input_form_button_font_size"
-            android:paddingStart="@dimen/input_form_button_padding"
-            android:paddingEnd="@dimen/input_form_button_padding"
-            app:layout_constraintTop_toBottomOf="@+id/register_edit_text_password"
+            app:cardCornerRadius="@dimen/input_card_corner_radius"
+            app:cardElevation="@dimen/card_elevation"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:padding="@dimen/input_card_padding">
+
+                <TextView
+                    android:id="@+id/register_logotype"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/input_form_margin_bottom"
+                    android:text="@string/registration_form_title"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/title_font_size"
+                    app:layout_constraintBottom_toTopOf="@+id/register_edit_text_username_input_layout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/register_edit_text_username_input_layout"
+                    android:layout_width="@dimen/input_form_field_width"
+                    android:layout_height="@dimen/input_form_field_height"
+                    android:layout_marginBottom="@dimen/input_form_margin_bottom"
+                    android:hint="@string/username_field_hint"
+                    app:layout_constraintBottom_toTopOf="@+id/register_edit_text_password_input_layout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/register_logotype">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/register_edit_text_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/register_edit_text_password_input_layout"
+                    android:layout_width="@dimen/input_form_field_width"
+                    android:layout_height="@dimen/input_form_field_height"
+                    android:layout_marginBottom="@dimen/input_form_margin_bottom"
+                    android:hint="@string/password_field_hint"
+                    app:layout_constraintBottom_toTopOf="@+id/register_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/register_edit_text_username_input_layout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/register_edit_text_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="textPassword" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/register_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/input_form_margin_bottom"
+                    android:paddingStart="@dimen/input_form_button_padding"
+                    android:paddingEnd="@dimen/input_form_button_padding"
+                    android:text="@string/register_button_text"
+                    android:textSize="@dimen/input_form_button_font_size"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/register_edit_text_password_input_layout" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
