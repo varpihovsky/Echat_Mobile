@@ -66,4 +66,7 @@ interface EchatRestAPI {
         @Query("key") key: String,
         @Query("id") messageId: Long
     ): Call<Any>
+
+    @GET("chat/message/not-read")
+    fun getNotReadMessages(@Query("key") key: String): Call<MessageList>
 }

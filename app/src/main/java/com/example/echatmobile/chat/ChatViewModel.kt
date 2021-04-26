@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.echatmobile.model.EchatModel
+import com.example.echatmobile.model.entities.Message
 import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.BaseViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,23 +22,42 @@ class ChatViewModel @Inject constructor(
 
     val data by lazy { Data() }
     private val messagesLiveData = MutableLiveData<List<MessageDTO>>()
+    private val chatUpdateLiveData = MutableLiveData<MessageDTO?>()
     private var chatId by Delegates.notNull<Long>()
     private var areNotBackgroundThreadsRunning = false
 
+    private val showedRecentMessages = mutableListOf<MessageDTO>()
+
     inner class Data {
         val messagesLiveData: LiveData<List<MessageDTO>> = this@ChatViewModel.messagesLiveData
+
+        //TODO: wrap chatUpdateLiveData with BaseEvent and put it to baseEventLiveData
+        val chatUpdateLiveData: LiveData<MessageDTO?> = this@ChatViewModel.chatUpdateLiveData
     }
 
     fun loadChat(chatId: Long) {
         this.chatId = chatId
         GlobalScope.launch(Dispatchers.IO) { handleChatLoading(chatId) }
         areNotBackgroundThreadsRunning = false
-        GlobalScope.launch {
-            while (!areNotBackgroundThreadsRunning) {
-                delay(500)
-                handleChatLoading(chatId)
-            }
+        GlobalScope.launch(Dispatchers.IO) { handleNotReadMessages() }
+    }
+
+    private suspend fun handleNotReadMessages() {
+        while (!areNotBackgroundThreadsRunning) {
+            delay(CHAT_LOADING_DELAY)
+            val recentMessages = echatModel.getNotReadMessages()
+                .map { mapMessageAligning(it) }
+                .filter { it.chat.id == chatId && !showedRecentMessages.contains(it) }
+            showedRecentMessages.addAll(recentMessages)
+            GlobalScope.launch(Dispatchers.Main) { notifyUIAboutChatUpdates(recentMessages) }
         }
+    }
+
+    private fun notifyUIAboutChatUpdates(recentMessages: List<MessageDTO>) {
+        recentMessages.forEach {
+            chatUpdateLiveData.value = it
+        }
+        chatUpdateLiveData.value = null
     }
 
     private fun handleChatLoading(chatId: Long) {
@@ -51,13 +71,17 @@ class ChatViewModel @Inject constructor(
 
     private fun retrieveMessagesList(chatId: Long) =
         echatModel.getMessageHistory(chatId).map {
-            it.toDTO { message ->
-                if (message.sender.login == echatModel.currentUserLogin) {
-                    ALIGN_RIGHT
-                } else {
-                    ALIGN_LEFT
-                }
+            mapMessageAligning(it)
+        }
+
+    private fun mapMessageAligning(message: Message): MessageDTO =
+        message.toDTO { messageDTO ->
+            if (messageDTO.sender.login == echatModel.currentUserLogin) {
+                ALIGN_RIGHT
+            } else {
+                ALIGN_LEFT
             }
+
         }
 
     fun onSendButtonClick(text: String) {
@@ -70,10 +94,14 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onMessageRead(messageDTO: MessageDTO) {
-        echatModel.setMessageRead(messageDTO.id)
+        GlobalScope.launch(Dispatchers.IO) { echatModel.setMessageRead(messageDTO.id) }
     }
 
     fun stopBackgroundThreads() {
         areNotBackgroundThreadsRunning = true
+    }
+
+    companion object {
+        private const val CHAT_LOADING_DELAY = 500L
     }
 }

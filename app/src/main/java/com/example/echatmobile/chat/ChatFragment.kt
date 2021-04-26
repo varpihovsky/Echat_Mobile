@@ -55,6 +55,9 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
         viewModel.data.messagesLiveData.observe(viewLifecycleOwner) {
             showChat(it)
         }
+        viewModel.data.chatUpdateLiveData.observe(viewLifecycleOwner) {
+            it?.let { messageDTO -> loadRecentMessage(messageDTO) }
+        }
     }
 
     private fun initArguments() {
@@ -64,10 +67,14 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
     }
 
     private fun showChat(messages: List<MessageDTO>) {
-        //TODO: optimize addition of recently added messages
         dataList.removeAll { true }
         dataList.addAll(messages)
         binding.chatMessageList.adapter?.notifyDataSetChanged()
+    }
+
+    private fun loadRecentMessage(messageDTO: MessageDTO) {
+        dataList.add(messageDTO)
+        binding.chatMessageList.adapter?.notifyItemInserted(dataList.size - 1)
     }
 
     override fun onDetach() {

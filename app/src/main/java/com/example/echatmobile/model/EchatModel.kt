@@ -100,6 +100,13 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
         }
     }
 
+    fun getNotReadMessages(): List<Message> {
+        val response = executeCallAndCheckForErrors {
+            echatRestAPI.getNotReadMessages(authorizationKey.key)
+        }
+        return response?.body()?.response ?: emptyList()
+    }
+
     private fun <T> executeCallAndCheckForErrors(
         repeatCount: Int = 2,
         block: () -> Call<T>
