@@ -64,6 +64,7 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
         arguments?.let {
             viewModel.loadChat(it.getLong(CHAT_ID_ARGUMENT))
         }
+        binding.chatMessageList.layoutManager?.scrollToPosition(dataList.size - 1)
     }
 
     private fun showChat(messages: List<MessageDTO>) {

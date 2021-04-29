@@ -22,4 +22,10 @@
     <string name="unread_messages_count_example_text">12</string>
     <string name="room_search_input_text">Room name</string>
     <string name="room_search_button_text">search</string>
+    <string name="search_result_chat_button_text">join</string>
+    <string name="search_result_user_button_text">view</string>
+    <string-array name="search_type">
+        <item>Rooms</item>
+        <item>Users</item>
+    </string-array>
 </resources>

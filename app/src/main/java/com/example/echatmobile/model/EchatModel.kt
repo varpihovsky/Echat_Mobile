@@ -53,6 +53,13 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
         return response?.body()
     }
 
+    fun getUserProfileByQuery(query: String): List<UserWithoutPassword> {
+        val response = executeCallAndCheckForErrors {
+            echatRestAPI.getProfilesByQuery(authorizationKey.key, query)
+        }
+        return response?.body()?.response ?: emptyList()
+    }
+
     fun getChatsByParticipantId(id: Long): List<Chat> {
         val response = executeCallAndCheckForErrors {
             echatRestAPI.getChatsByParticipantId(
@@ -63,10 +70,21 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
         return response?.body()?.response ?: emptyList()
     }
 
+    fun getChatsByQuery(query: String): List<Chat> {
+        val response = executeCallAndCheckForErrors(2) {
+            echatRestAPI.getChatsByQuery(authorizationKey.key, query)
+        }
+        return response?.body()?.response ?: emptyList()
+    }
+
     fun createChat(name: String): Chat? {
         val response =
-            executeCallAndCheckForErrors { echatRestAPI.createChat(authorizationKey.key, name) }
+            executeCallAndCheckForErrors(1) { echatRestAPI.createChat(authorizationKey.key, name) }
         return response?.body()
+    }
+
+    fun joinToChat(chatId: Long) {
+        executeCallAndCheckForErrors { echatRestAPI.joinToChat(authorizationKey.key, chatId) }
     }
 
     fun getMessageHistory(chatId: Long): List<Message> {
@@ -106,6 +124,8 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
         }
         return response?.body()?.response ?: emptyList()
     }
+
+    fun getCurrentUserChatList() = getCurrentUserProfile()?.id?.let { getChatsByParticipantId(it) }
 
     private fun <T> executeCallAndCheckForErrors(
         repeatCount: Int = 2,

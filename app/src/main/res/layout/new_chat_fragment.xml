@@ -5,7 +5,6 @@
     tools:context=".new_chat.NewChatFragment">
 
     <data>
-
         <variable
             name="viewModel"
             type="com.example.echatmobile.new_chat.NewChatViewModel" />
@@ -21,7 +20,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/room_search_input_card"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="120dp"
             app:cardElevation="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,9 +30,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.google.android.material.textfield.TextInputLayout
+                <Spinner
+                    android:id="@+id/search_type_spinner"
+                    android:layout_width="150dp"
+                    android:layout_height="45dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/search_type_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="- Search type"
+                    android:textSize="21dp"
+                    app:layout_constraintBottom_toTopOf="@+id/room_search_input_field_layout"
+                    app:layout_constraintStart_toEndOf="@+id/search_type_spinner"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
                     android:id="@+id/room_search_input_field_layout"
-                    android:layout_width="200dp"
+                    android:layout_width="190dp"
                     android:layout_height="45dp"
                     android:layout_marginStart="10dp"
                     android:hint="@string/room_search_input_text"
@@ -41,15 +60,13 @@
                     app:boxCornerRadiusBottomStart="@dimen/room_name_input_field_corner_radius"
                     app:boxCornerRadiusTopEnd="@dimen/room_name_input_field_corner_radius"
                     app:boxCornerRadiusTopStart="@dimen/room_name_input_field_corner_radius"
+                    app:hintAnimationEnabled="false"
+                    app:layout_constraintEnd_toStartOf="@+id/room_search_button"
+                    app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-
-                </com.google.android.material.textfield.TextInputLayout>
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintTop_toBottomOf="@+id/search_type_spinner" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/room_search_button"
@@ -57,18 +74,23 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:text="@string/room_search_button_text"
+                    android:onClick="@{ () -> viewModel.onSearchButtonClick(roomSearchInputFieldLayout.getText().toString())}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/room_search_input_field_layout"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintEnd_toStartOf="@+id/room_create_button"
+                    app:layout_constraintTop_toBottomOf="@+id/search_type_spinner" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/room_create_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:text="create"
+                    android:onClick="@{ () -> viewModel.onCreateButtonClick(roomSearchInputFieldLayout.getText().toString())}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/room_search_button"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/search_type_spinner" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>

@@ -28,10 +28,22 @@ interface EchatRestAPI {
         @Query("id") id: Long
     ): Call<UserWithoutPassword>
 
+    @GET("profile/get/by-name")
+    fun getProfilesByQuery(
+        @Query("key") key: String,
+        @Query("name") name: String
+    ): Call<UserWithoutPasswordList>
+
     @GET("chat/get/by-participant")
     fun getChatsByParticipantId(
         @Query("key") key: String,
         @Query("id") participantId: Long
+    ): Call<ChatList>
+
+    @GET("chat/get/by-name")
+    fun getChatsByQuery(
+        @Query("key") key: String,
+        @Query("name") name: String
     ): Call<ChatList>
 
     @POST("chat/create")
@@ -39,6 +51,12 @@ interface EchatRestAPI {
         @Query("key") key: String,
         @Query("name") name: String
     ): Call<Chat>
+
+    @POST("chat/join")
+    fun joinToChat(
+        @Query("key") key: String,
+        @Query("id") chatId: Long
+    ): Call<Any>
 
     @GET("chat/message/get-history")
     fun getMessageHistory(
