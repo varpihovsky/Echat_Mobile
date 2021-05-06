@@ -73,7 +73,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:text="@string/room_search_button_text"
+                    android:text="@string/search_button_text"
                     android:onClick="@{ () -> viewModel.onSearchButtonClick(roomSearchInputFieldLayout.getText().toString())}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/room_search_input_field_layout"

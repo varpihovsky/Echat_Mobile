@@ -25,14 +25,7 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
 
     protected fun makeToast(text: String, toastLength: Int) {
         GlobalScope.launch(Dispatchers.Main) {
-            baseEventLiveData.value =
-                BaseEvent(
-                    BaseEventType.TOAST_STRING
-                        .builder<ToastStringBuilder>()
-                        .setText(text)
-                        .setLength(toastLength).build()
-                )
-            resetBaseEventLiveData()
+            baseEventLiveData.value = BaseEvent(ToastStringEvent(text, toastLength))
         }
     }
 
@@ -40,20 +33,12 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
     protected fun makeToast(resource: Int, toastLength: Int) {
         GlobalScope.launch(Dispatchers.Main) {
             baseEventLiveData.value =
-                BaseEvent(
-                    BaseEventType.TOAST_RESOURCE
-                        .builder<ToastResourceBuilder>()
-                        .setResource(resource)
-                        .setLength(toastLength)
-                        .build()
-                )
-            resetBaseEventLiveData()
+                BaseEvent(ToastResourceEvent(resource, toastLength))
         }
     }
 
     protected fun hideKeyboard() {
-        baseEventLiveData.value = BaseEvent(BaseEventType.HIDE_KEYBOARD)
-        resetBaseEventLiveData()
+        baseEventLiveData.value = BaseEvent(HideKeyboardEvent())
     }
 
     fun baseInputFieldRefocused(focused: Boolean) {
@@ -64,19 +49,7 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
 
     protected fun navigate(action: Int, data: Bundle? = null) {
         GlobalScope.launch(Dispatchers.Main) {
-            baseEventLiveData.value =
-                BaseEvent(
-                    BaseEventType.NAVIGATE
-                        .builder<NavigateEventBuilder>()
-                        .setAction(action)
-                        .setNavigationData(data)
-                        .build()
-                )
-            resetBaseEventLiveData()
+            baseEventLiveData.value = BaseEvent(NavigateEvent(action, data))
         }
-    }
-
-    protected fun resetBaseEventLiveData() {
-        baseEventLiveData.value = BaseEvent(BaseEventType.EMPTY)
     }
 }

@@ -101,8 +101,6 @@ class NewChatViewModel @Inject constructor(
             viewModelScope.launch {
                 dataList.value?.indexOf(chat)?.let {
                     baseEventLiveData.value = BaseEvent(RemoveDataListItemEvent(it))
-
-                    //TODO: fix bug: item doesn't removed
                     dataList.value = dataList.value?.toMutableList()?.apply { removeAt(it) }
                 }
             }

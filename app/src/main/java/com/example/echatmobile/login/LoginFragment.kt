@@ -23,14 +23,17 @@ class LoginFragment : BaseFragment<LoginViewModel, LoginFragmentBinding>() {
 
     override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
         when (baseEvent) {
-            AuthorizationEvents.CHANGE_AUTHORIZATION_BUTTON -> changeLoginButton(baseEvent.data())
+            is ChangeAuthorizationButtonEvent -> changeLoginButton(
+                baseEvent.color,
+                baseEvent.clickable
+            )
             else -> throw RuntimeException("Unknown event type")
         }
     }
 
-    private fun changeLoginButton(authorizationButtonEventData: ChangeAuthorizationButtonEventData) {
-        binding.loginButton.setBackgroundColor(authorizationButtonEventData.color)
-        binding.loginButton.isEnabled = authorizationButtonEventData.clickable
+    private fun changeLoginButton(color: Int, clickable: Boolean) {
+        binding.loginButton.setBackgroundColor(color)
+        binding.loginButton.isEnabled = clickable
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

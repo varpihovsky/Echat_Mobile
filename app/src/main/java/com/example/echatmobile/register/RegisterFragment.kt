@@ -6,8 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.RegisterFragmentBinding
 import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
-import com.example.echatmobile.login.AuthorizationEvents
-import com.example.echatmobile.login.ChangeAuthorizationButtonEventData
+import com.example.echatmobile.login.ChangeAuthorizationButtonEvent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
 import com.example.echatmobile.system.EchatApplication
@@ -24,7 +23,10 @@ class RegisterFragment : BaseFragment<RegisterViewModel, RegisterFragmentBinding
 
     override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
         when (baseEvent) {
-            AuthorizationEvents.CHANGE_AUTHORIZATION_BUTTON -> changeRegisterButton(baseEvent.data())
+            is ChangeAuthorizationButtonEvent -> changeRegisterButton(
+                baseEvent.color,
+                baseEvent.clickable
+            )
             else -> throw RuntimeException("Event doesn't supported")
         }
     }
@@ -46,9 +48,9 @@ class RegisterFragment : BaseFragment<RegisterViewModel, RegisterFragmentBinding
         }
     }
 
-    private fun changeRegisterButton(data: ChangeAuthorizationButtonEventData) {
-        binding.registerButton.isEnabled = data.clickable
-        binding.registerButton.setBackgroundColor(data.color)
+    private fun changeRegisterButton(color: Int, clickable: Boolean) {
+        binding.registerButton.isEnabled = clickable
+        binding.registerButton.setBackgroundColor(color)
     }
 
     override fun onFocusChange(v: View?, hasFocus: Boolean) {

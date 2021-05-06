@@ -18,7 +18,12 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
     override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
         when (baseEvent) {
             is ClearChatFieldEvent -> binding.chatTextField.setText("")
+            is MoveDownEvent -> moveDown()
         }
+    }
+
+    private fun moveDown() {
+        binding.chatMessageList.layoutManager?.scrollToPosition(dataList.lastIndex)
     }
 
     override fun layoutId(): Int = R.layout.chat_fragment
@@ -60,13 +65,6 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
         }
     }
 
-    private fun initArguments() {
-        arguments?.let {
-            viewModel.loadChat(it.getLong(CHAT_ID_ARGUMENT))
-        }
-        binding.chatMessageList.layoutManager?.scrollToPosition(dataList.size - 1)
-    }
-
     private fun showChat(messages: List<MessageDTO>) {
         dataList.removeAll { true }
         dataList.addAll(messages)
@@ -76,6 +74,13 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
     private fun loadRecentMessage(messageDTO: MessageDTO) {
         dataList.add(messageDTO)
         binding.chatMessageList.adapter?.notifyItemInserted(dataList.size - 1)
+    }
+
+    private fun initArguments() {
+        arguments?.let {
+            viewModel.loadChat(it.getLong(CHAT_ID_ARGUMENT))
+        }
+        binding.chatMessageList.layoutManager?.scrollToPosition(dataList.size - 1)
     }
 
     override fun onDetach() {

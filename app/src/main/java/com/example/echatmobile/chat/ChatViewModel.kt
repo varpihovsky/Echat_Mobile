@@ -86,7 +86,6 @@ class ChatViewModel @Inject constructor(
 
     fun onSendButtonClick(text: String) {
         baseEventLiveData.value = BaseEvent(ClearChatFieldEvent())
-        resetBaseEventLiveData()
         GlobalScope.launch(Dispatchers.IO) {
             echatModel.writeMessage(chatId, text)
             handleChatLoading(chatId)
@@ -99,6 +98,10 @@ class ChatViewModel @Inject constructor(
 
     fun stopBackgroundThreads() {
         areNotBackgroundThreadsRunning = true
+    }
+
+    fun onMoveDownButtonClick() {
+        baseEventLiveData.value = BaseEvent(MoveDownEvent())
     }
 
     companion object {

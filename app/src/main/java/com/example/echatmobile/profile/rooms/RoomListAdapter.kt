@@ -17,10 +17,12 @@ class RoomListAdapter(var roomList: List<Chat>, private val itemClickObject: Ite
         var isExpanded = false
 
         fun expand() {
+            isExpanded = true
             binding?.roomAdditional?.visibility = View.VISIBLE
         }
 
         fun shrink() {
+            isExpanded = false
             binding?.roomAdditional?.visibility = View.GONE
         }
     }
@@ -30,19 +32,29 @@ class RoomListAdapter(var roomList: List<Chat>, private val itemClickObject: Ite
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding?.roomItemTitle?.text = roomList[position].name
+        initListeners(holder)
+    }
 
-        holder.binding?.roomItemTitle?.setOnClickListener {
-            itemClickObject.onItemClick(roomList[holder.adapterPosition])
-        }
-        holder.binding?.roomRemoveButton?.setOnClickListener {
-            itemClickObject.onItemRemoveClick(roomList[holder.adapterPosition])
-        }
-        holder.binding?.roomMoreButton?.setOnClickListener {
-            if (holder.isExpanded) {
-                holder.shrink()
-            } else {
-                holder.expand()
+    private fun initListeners(holder: ViewHolder) {
+        holder.binding?.apply {
+            roomItemTitle.setOnClickListener {
+                itemClickObject.onItemClick(roomList[holder.adapterPosition])
             }
+            roomRemoveButton.setOnClickListener {
+                itemClickObject.onItemRemoveClick(roomList[holder.adapterPosition])
+            }
+            roomInviteButton.setOnClickListener {
+                itemClickObject.onInviteClick(roomList[holder.adapterPosition])
+            }
+            roomMoreButton.setOnClickListener { processMoreClick(holder) }
+        }
+    }
+
+    private fun processMoreClick(holder: ViewHolder) {
+        if (holder.isExpanded) {
+            holder.shrink()
+        } else {
+            holder.expand()
         }
     }
 
@@ -53,4 +65,6 @@ interface ItemClickObject {
     fun onItemClick(chat: Chat)
 
     fun onItemRemoveClick(chat: Chat)
+
+    fun onInviteClick(chat: Chat)
 }

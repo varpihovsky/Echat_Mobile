@@ -46,6 +46,7 @@ class NewChatFragment : BaseFragment<NewChatViewModel, NewChatFragmentBinding>()
     private fun removeDataListItem(position: Int) {
         reactToDataListChanges = false
         dataList.removeAt(position)
+        binding.roomSearchResultList.adapter?.notifyItemRemoved(position)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

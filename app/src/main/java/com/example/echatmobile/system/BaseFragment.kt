@@ -10,7 +10,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import com.example.echatmobile.MainActivity
 import com.example.echatmobile.di.modules.BaseFragmentModule
@@ -19,7 +18,7 @@ import javax.inject.Inject
 
 abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment() {
     protected val navigationController: NavController
-        protected get() {
+        get() {
             if (_nav == null) {
                 inject()
             }
@@ -96,31 +95,30 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
     }
 
     private fun handleBaseEvent(baseEvent: BaseEvent<BaseEventTypeInterface>) {
-        baseEvent.get().let {
+        baseEvent.get()?.let {
             when (it) {
-                BaseEventType.HIDE_KEYBOARD -> view?.let { view -> activity?.hideKeyboard(view) }
-                BaseEventType.TOAST_RESOURCE -> showToastResource(it.data())
-                BaseEventType.TOAST_STRING -> showToastString(it.data())
-                BaseEventType.NAVIGATE -> navigate(it.data())
-                BaseEventType.EMPTY -> {
-                }
+                is HideKeyboardEvent -> view?.let { view -> activity?.hideKeyboard(view) }
+                is ToastResourceEvent -> showToastResource(it.resource, it.length)
+                is ToastStringEvent -> showToastString(it.text, it.length)
+                is NavigateEvent -> navigate(it.action, it.navigationData)
+
                 else -> handleExtendedObservers(it)
             }
         }
     }
 
     @SuppressLint("ShowToast")
-    private fun showToastResource(data: ToastResourceData) {
-        Toast.makeText(context, resources.getString(data.resource), data.length).show()
+    private fun showToastResource(resource: Int, length: Int) {
+        Toast.makeText(context, resources.getString(resource), length).show()
     }
 
     @SuppressLint("ShowToast")
-    private fun showToastString(data: ToastStringData) {
-        Toast.makeText(context, data.text, data.length).show()
+    private fun showToastString(text: String, length: Int) {
+        Toast.makeText(context, text, length).show()
     }
 
-    private fun navigate(data: NavigateEventData) {
-        navigationController.navigate(data.action, data.data)
+    private fun navigate(action: Int, data: Bundle?) {
+        navigationController.navigate(action, data)
     }
 
     companion object {

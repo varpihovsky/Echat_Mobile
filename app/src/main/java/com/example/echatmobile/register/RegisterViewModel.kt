@@ -2,10 +2,7 @@ package com.example.echatmobile.register
 
 import android.app.Application
 import android.graphics.Color
-import android.widget.Toast
-import com.example.echatmobile.R
-import com.example.echatmobile.login.AuthorizationEvents
-import com.example.echatmobile.login.ChangeAuthorizationButtonEventBuilder
+import com.example.echatmobile.login.ChangeAuthorizationButtonEvent
 import com.example.echatmobile.model.EchatModel
 import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.BaseFragment.Companion.TOAST_LONG
@@ -14,7 +11,6 @@ import com.example.echatmobile.system.BaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 class RegisterViewModel @Inject constructor(
@@ -22,10 +18,6 @@ class RegisterViewModel @Inject constructor(
     private val echatModel: EchatModel
 ) :
     BaseViewModel(application) {
-    fun onBackButtonClick() {
-        navigate(R.id.action_registerFragment_to_loginFragment)
-    }
-
     fun onRegisterButtonClick(login: String, password: String) {
         setRegisterButtonNotClickable()
         GlobalScope.launch(Dispatchers.IO) { handleRegister(login, password) }
@@ -45,23 +37,11 @@ class RegisterViewModel @Inject constructor(
 
     private fun setRegisterButtonNotClickable() {
         baseEventLiveData.value =
-            BaseEvent(
-                AuthorizationEvents.CHANGE_AUTHORIZATION_BUTTON
-                    .builder<ChangeAuthorizationButtonEventBuilder>()
-                    .setClickable(false)
-                    .setColor(Color.GRAY)
-                    .build()
-            )
+            BaseEvent(ChangeAuthorizationButtonEvent(Color.GRAY, false))
     }
 
     private fun setRegisterButtonClickable() {
         baseEventLiveData.value =
-            BaseEvent(
-                AuthorizationEvents.CHANGE_AUTHORIZATION_BUTTON
-                    .builder<ChangeAuthorizationButtonEventBuilder>()
-                    .setClickable(true)
-                    .setColor(Color.parseColor("#6200EE"))
-                    .build()
-            )
+            BaseEvent(ChangeAuthorizationButtonEvent(Color.parseColor("#6200EE"), true))
     }
 }

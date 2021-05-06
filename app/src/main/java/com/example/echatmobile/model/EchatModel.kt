@@ -54,10 +54,11 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
     }
 
     fun getUserProfileByQuery(query: String): List<UserWithoutPassword> {
+        val currentUser = getCurrentUserProfile()?.let { UserWithoutPassword(it.id, it.login) }
         val response = executeCallAndCheckForErrors {
             echatRestAPI.getProfilesByQuery(authorizationKey.key, query)
         }
-        return response?.body()?.response ?: emptyList()
+        return response?.body()?.response?.filter { it != currentUser } ?: emptyList()
     }
 
     fun getChatsByParticipantId(id: Long): List<Chat> {
@@ -126,6 +127,32 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
     }
 
     fun getCurrentUserChatList() = getCurrentUserProfile()?.id?.let { getChatsByParticipantId(it) }
+
+    fun getCurrentUserInvites(): List<Invite> {
+        val response =
+            executeCallAndCheckForErrors {
+                echatRestAPI.getInvites(authorizationKey.key)
+            }
+        return response?.body()?.response ?: emptyList()
+    }
+
+    fun invite(chatId: Long, userId: Long) {
+        executeCallAndCheckForErrors {
+            echatRestAPI.invite(authorizationKey.key, chatId, userId)
+        }
+    }
+
+    fun acceptInvite(inviteId: Long) {
+        executeCallAndCheckForErrors {
+            echatRestAPI.acceptInvite(authorizationKey.key, inviteId)
+        }
+    }
+
+    fun declineInvite(inviteId: Long) {
+        executeCallAndCheckForErrors {
+            echatRestAPI.declineInvite(authorizationKey.key, inviteId)
+        }
+    }
 
     private fun <T> executeCallAndCheckForErrors(
         repeatCount: Int = 2,
