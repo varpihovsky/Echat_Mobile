@@ -23,6 +23,7 @@ class InviteAdapter(
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.binding?.joinChatItemTitle?.text = dataList[position].login
+        holder.binding?.joinChatItemButton?.setText(R.string.room_invite_button_text)
         holder.binding?.joinChatItemButton?.setOnClickListener {
             inviteButtonClickListener.onInviteButtonClick(
                 dataList[holder.adapterPosition]
