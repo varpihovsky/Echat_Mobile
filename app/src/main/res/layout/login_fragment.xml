@@ -5,11 +5,9 @@
     tools:context=".login.LoginFragment">
 
     <data>
-
         <variable
             name="viewModel"
             type="com.example.echatmobile.login.LoginViewModel" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

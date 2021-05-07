@@ -10,5 +10,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="empty_color">#00000000</color>
     <color name="transparent_blue">#880000FF</color>
-    <color name="chat_border_transparent_black">#11111111</color>
+    <color name="chat_background_transparent_black">#11111111</color>
+    <color name="chat_item_title_color">#212199</color>
 </resources>

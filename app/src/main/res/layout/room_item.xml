@@ -5,15 +5,15 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="@dimen/room_item_card_horizontal_margin"
+        android:layout_marginEnd="@dimen/room_item_card_horizontal_margin"
         android:layout_marginBottom="@dimen/small_margin"
         app:cardElevation="@dimen/card_elevation">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp">
+            android:padding="@dimen/room_item_layout_padding">
 
             <TextView
                 android:id="@+id/room_item_title"
@@ -33,8 +33,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/small_margin"
-                android:layout_marginEnd="15dp"
-                android:elevation="8dp"
+                android:layout_marginEnd="@dimen/room_item_unread_messages_count_margin_end"
+                android:elevation="@dimen/room_item_unread_messages_count_elevation"
                 android:text="@string/unread_messages_count_example_text"
                 android:textSize="@dimen/medium_title_text"
                 app:layout_constraintEnd_toStartOf="@+id/room_more_button"
@@ -42,8 +42,8 @@
 
             <ImageButton
                 android:id="@+id/room_more_button"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="@dimen/room_item_more_button_resolution"
+                android:layout_height="@dimen/room_item_more_button_resolution"
                 android:layout_marginTop="@dimen/small_margin"
                 android:background="@color/white"
                 android:scaleType="fitCenter"
@@ -53,7 +53,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/room_additional"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/constraint_layout_assign_res"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@+id/room_item_title"
@@ -66,7 +66,7 @@
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Invite"
+                    android:text="@string/room_invite_button_text"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 

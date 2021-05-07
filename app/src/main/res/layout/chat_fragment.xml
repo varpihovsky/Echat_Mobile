@@ -5,7 +5,6 @@
     tools:context=".chat.ChatFragment">
 
     <data>
-
         <variable
             name="viewModel"
             type="com.example.echatmobile.chat.ChatViewModel" />
@@ -28,7 +27,7 @@
             android:id="@+id/move_down_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
+            android:layout_margin="@dimen/chat_move_down_button_margin"
             android:onClick="@{() -> viewModel.onMoveDownButtonClick()}"
             android:src="@drawable/ic_baseline_expand_more_24"
             app:layout_constraintBottom_toTopOf="@+id/chat_input_field"
@@ -37,11 +36,11 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/chat_input_field"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:background="@color/chat_border_transparent_black"
-            android:elevation="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:layout_height="@dimen/chat_input_field_height"
+            android:background="@color/chat_background_transparent_black"
+            android:elevation="@dimen/chat_input_field_elevation"
+            android:paddingTop="@dimen/chat_input_field_vertical_padding"
+            android:paddingBottom="@dimen/chat_input_field_vertical_padding"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +49,7 @@
             <EditText
                 android:id="@+id/chat_text_field"
                 android:layout_width="@dimen/constraint_layout_assign_res"
-                android:layout_height="50dp"
+                android:layout_height="@dimen/chat_text_field_height"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/chat_send_button"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -58,7 +57,7 @@
             <Button
                 android:id="@+id/chat_send_button"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_height="@dimen/chat_send_button_height"
                 android:onClick="@{() -> viewModel.onSendButtonClick(chatTextField.getText().toString())}"
                 android:text="@string/chat_send_button_text"
                 app:layout_constraintBottom_toBottomOf="parent"

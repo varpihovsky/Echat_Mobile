@@ -5,21 +5,21 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="5dp">
+        android:layout_marginStart="@dimen/invite_item_margin_horizontal"
+        android:layout_marginEnd="@dimen/invite_item_margin_horizontal"
+        android:layout_marginBottom="@dimen/invite_item_margin_bottom">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="5dp">
+            android:layout_margin="@dimen/invite_item_layout_margin">
 
             <TextView
                 android:id="@+id/invite_item_chat_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chat Name"
-                android:textSize="24sp"
+                android:text="@string/invite_item_chat_name_example_text"
+                android:textSize="@dimen/invite_item_chat_name_text_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -37,16 +37,16 @@
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Accept"
-                    android:textSize="18sp" />
+                    android:text="@string/invite_item_accept_button_text"
+                    android:textSize="@dimen/invite_item_buttons_text_size" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/invite_item_decline_button"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Decline"
-                    android:textSize="18sp" />
+                    android:text="@string/invite_item_decline_button_text"
+                    android:textSize="@dimen/invite_item_buttons_text_size" />
 
             </LinearLayout>
 
