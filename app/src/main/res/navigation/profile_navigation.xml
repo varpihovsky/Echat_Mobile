@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/profile_navigation"
+    app:startDestination="@id/profileRoomsFragment">
+
+    <fragment
+        android:id="@+id/profileRoomsFragment"
+        android:name="com.example.echatmobile.profile.rooms.ProfileRoomsFragment"
+        android:label="ProfileRoomsFragment">
+        <action
+            android:id="@+id/action_profileRoomsFragment_to_profileInvitesFragment"
+            app:destination="@id/profileInvitesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileInvitesFragment"
+        android:name="com.example.echatmobile.profile.invites.ProfileInvitesFragment"
+        android:label="ProfileInvitesFragment">
+        <action
+            android:id="@+id/action_profileInvitesFragment_to_profileRoomsFragment"
+            app:destination="@id/profileRoomsFragment" />
+    </fragment>
+</navigation>

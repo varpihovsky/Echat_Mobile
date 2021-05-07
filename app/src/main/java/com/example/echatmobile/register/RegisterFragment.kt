@@ -6,13 +6,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.RegisterFragmentBinding
 import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
-import com.example.echatmobile.login.AuthorizationEvents
-import com.example.echatmobile.login.ChangeAuthorizationButtonEventData
-import com.example.echatmobile.system.BaseEvent
+import com.example.echatmobile.login.ChangeAuthorizationButtonEvent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
 import com.example.echatmobile.system.EchatApplication
-import java.lang.RuntimeException
 
 class RegisterFragment : BaseFragment<RegisterViewModel, RegisterFragmentBinding>(),
     View.OnFocusChangeListener {
@@ -24,9 +21,12 @@ class RegisterFragment : BaseFragment<RegisterViewModel, RegisterFragmentBinding
             .plus(EchatViewModelFactoryModule())
             .getRegisterViewModelFactory()
 
-    override fun handleExtendedObservers(baseEvent: BaseEvent<BaseEventTypeInterface>) {
-        when (baseEvent.eventType) {
-            AuthorizationEvents.CHANGE_AUTHORIZATION_BUTTON -> changeRegisterButton(baseEvent.eventType.data())
+    override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
+        when (baseEvent) {
+            is ChangeAuthorizationButtonEvent -> changeRegisterButton(
+                baseEvent.color,
+                baseEvent.clickable
+            )
             else -> throw RuntimeException("Event doesn't supported")
         }
     }
@@ -40,7 +40,6 @@ class RegisterFragment : BaseFragment<RegisterViewModel, RegisterFragmentBinding
     private fun initListeners() {
         binding.registerEditTextPassword.onFocusChangeListener = this
         binding.registerEditTextUsername.onFocusChangeListener = this
-        binding.registerBackButton.setOnClickListener { viewModel.onBackButtonClick() }
         binding.registerButton.setOnClickListener {
             viewModel.onRegisterButtonClick(
                 binding.registerEditTextUsername.text.toString(),
@@ -49,9 +48,9 @@ class RegisterFragment : BaseFragment<RegisterViewModel, RegisterFragmentBinding
         }
     }
 
-    private fun changeRegisterButton(data: ChangeAuthorizationButtonEventData) {
-        binding.registerButton.isEnabled = data.clickable
-        binding.registerButton.setBackgroundColor(data.color)
+    private fun changeRegisterButton(color: Int, clickable: Boolean) {
+        binding.registerButton.isEnabled = clickable
+        binding.registerButton.setBackgroundColor(color)
     }
 
     override fun onFocusChange(v: View?, hasFocus: Boolean) {

@@ -3,16 +3,36 @@
     <string name="username_field_hint">username</string>
     <string name="password_field_hint">password</string>
     <string name="registration_success">Registration complete, please login</string>
-    <string name="on_empty_login_or_password">Login and password cant be empty</string>
+    <string name="on_empty_login_or_password">Login and password can\'t be empty</string>
     <string name="chat_name_field_hint">name</string>
     <string name="login_button_text">LOGIN</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="sample_profile_text">Username Sample</string>
     <string name="room_item_sample_title">Sample Room</string>
     <string name="example_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
-    <string name="register_button_text">REGISTER</string>
+    <string name="register_button_text">Register</string>
     <string name="username">Username replies to Username</string>
     <string name="receiver_prefix_text">replies to</string>
     <string name="chat_send_button_text">Send</string>
+    <string name="forgot_password_button_text">Forgot password?</string>
+    <string name="registration_form_title">Registration</string>
+    <string name="message_date_example_text">21.21.2021</string>
+    <string name="remove_button_text">remove</string>
+    <string name="unread_messages_count_example_text">12</string>
+    <string name="room_search_input_text">Room name</string>
+    <string name="search_button_text">search</string>
+    <string name="search_result_chat_button_text">join</string>
+    <string name="search_result_user_button_text">view</string>
+    <string name="invite_item_chat_name_example_text">Chat Name</string>
+    <string name="invite_item_accept_button_text">Accept</string>
+    <string name="invite_item_decline_button_text">Decline</string>
+    <string name="join_chat_item_button_text">join</string>
+    <string name="room_search_type_hint_text">- Search type</string>
+    <string name="room_search_create_button_text">create</string>
+    <string name="profile_invites_button_text">Invites</string>
+    <string name="room_invite_button_text">Invite</string>
+    <string-array name="search_type">
+        <item>Rooms</item>
+        <item>Users</item>
+    </string-array>
 </resources>

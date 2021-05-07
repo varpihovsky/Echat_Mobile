@@ -1,14 +1,12 @@
 package com.example.echatmobile.profile
 
 import android.app.Application
-import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.echatmobile.R
-import com.example.echatmobile.chat.ChatFragment
 import com.example.echatmobile.model.EchatModel
-import com.example.echatmobile.model.entities.Chat
 import com.example.echatmobile.model.entities.UserWithoutPassword
+import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.BaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -20,16 +18,12 @@ class ProfileViewModel @Inject constructor(
     private val echatModel: EchatModel
 ) :
     BaseViewModel(application) {
-    val data: Data
-    val user = MutableLiveData<UserWithoutPassword>()
-    private val chatList = MutableLiveData<List<Chat>>()
+    val data by lazy { Data() }
+    private val user = MutableLiveData<UserWithoutPassword>()
 
-    init {
-        data = Data()
-    }
 
     inner class Data {
-        val chatList: LiveData<List<Chat>> = this@ProfileViewModel.chatList
+        val user: LiveData<UserWithoutPassword> = this@ProfileViewModel.user
     }
 
     fun loadProfileData(profileId: Long?) {
@@ -54,16 +48,19 @@ class ProfileViewModel @Inject constructor(
 
     private fun postData(userWithoutPassword: UserWithoutPassword) {
         user.postValue(userWithoutPassword)
-        chatList.postValue(echatModel.getChatsByParticipantId(userWithoutPassword.id))
     }
 
     fun onNewChatButtonClick() {
         navigate(R.id.action_profileFragment_to_newChatFragment)
     }
 
-    fun onChatItemClick(chat: Chat) {
-        navigate(
-            R.id.action_profileFragment_to_chatFragment,
-            Bundle().apply { putLong(ChatFragment.CHAT_ID_ARGUMENT, chat.id) })
+    fun onInvitesClick() {
+        baseEventLiveData.value =
+            BaseEvent(NavigateEvent(R.id.action_profileRoomsFragment_to_profileInvitesFragment))
+    }
+
+    fun onChatsClick() {
+        baseEventLiveData.value =
+            BaseEvent(NavigateEvent(R.id.action_profileInvitesFragment_to_profileRoomsFragment))
     }
 }

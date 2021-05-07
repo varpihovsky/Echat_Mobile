@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".new_chat.NewChatFragment">
@@ -15,52 +14,102 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"
-        android:focusableInTouchMode="true"
-        android:focusable="true">
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
-        <TextView
-            android:id="@+id/new_chat_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/input_form_margin_bottom"
-            android:textSize="@dimen/title_font_size"
-            android:textColor="@color/black"
-            android:text="New Chat"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintTop_toTopOf="parent"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/room_search_input_card"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/room_search_input_card_height"
+            app:cardElevation="@dimen/room_search_input_card_elevation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Spinner
+                    android:id="@+id/search_type_spinner"
+                    android:layout_width="@dimen/room_search_type_spinner_width"
+                    android:layout_height="@dimen/room_search_type_spinner_height"
+                    android:layout_marginStart="@dimen/room_search_type_spinner_margin"
+                    android:layout_marginTop="@dimen/room_search_type_spinner_margin"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/search_type_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/room_search_type_hint_margin_top"
+                    android:text="@string/room_search_type_hint_text"
+                    android:textSize="@dimen/room_search_type_hint_text_size"
+                    app:layout_constraintBottom_toTopOf="@+id/room_search_input_field_layout"
+                    app:layout_constraintStart_toEndOf="@+id/search_type_spinner"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/room_search_input_field_layout"
+                    android:layout_width="@dimen/room_search_input_field_layout_width"
+                    android:layout_height="@dimen/room_search_input_field_layout_height"
+                    android:layout_marginStart="@dimen/room_search_input_field_layout_margin_start"
+                    android:hint="@string/room_search_input_text"
+                    app:boxCornerRadiusBottomEnd="@dimen/room_name_input_field_corner_radius"
+                    app:boxCornerRadiusBottomStart="@dimen/room_name_input_field_corner_radius"
+                    app:boxCornerRadiusTopEnd="@dimen/room_name_input_field_corner_radius"
+                    app:boxCornerRadiusTopStart="@dimen/room_name_input_field_corner_radius"
+                    app:hintAnimationEnabled="false"
+                    app:layout_constraintEnd_toStartOf="@+id/room_search_button"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintTop_toBottomOf="@+id/search_type_spinner" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/room_search_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/room_search_button_margin_start"
+                    android:text="@string/search_button_text"
+                    android:onClick="@{ () -> viewModel.onSearchButtonClick(roomSearchInputFieldLayout.getText().toString())}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/room_search_input_field_layout"
+                    app:layout_constraintEnd_toStartOf="@+id/room_create_button"
+                    app:layout_constraintTop_toBottomOf="@+id/search_type_spinner" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/room_create_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/room_search_create_button_margin_start"
+                    android:text="@string/room_search_create_button_text"
+                    android:onClick="@{ () -> viewModel.onCreateButtonClick(roomSearchInputFieldLayout.getText().toString())}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/room_search_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/search_type_spinner" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/constraint_layout_assign_res"
+            app:cardCornerRadius="@dimen/room_search_result_card_corner_radius"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/new_chat_name_field"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/room_search_input_card">
 
-        <EditText
-            android:id="@+id/new_chat_name_field"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/input_form_margin_bottom"
-            android:paddingStart="@dimen/new_chat_form_field_padding"
-            android:paddingEnd="@dimen/new_chat_form_field_padding"
-            android:hint="name"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/new_chat_title"
-            app:layout_constraintBottom_toTopOf="@+id/new_chat_create_button"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/room_search_result_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-        <Button
-            android:id="@+id/new_chat_create_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/new_chat_create_button_padding"
-            android:paddingEnd="@dimen/new_chat_create_button_padding"
-            android:onClick="@{() -> viewModel.onCreateButtonClick(newChatNameField.getText().toString())}"
-            android:text="CREATE"
-            app:layout_constraintTop_toBottomOf="@+id/new_chat_name_field"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <include
-            android:id="@+id/navigation_panel_new_chat"
-            layout="@layout/navigation_panel"/>
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -6,15 +6,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.LoginFragmentBinding
 import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
-import com.example.echatmobile.profile.ProfileFragment.Companion.PROFILE_ID_KEY
-import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
 import com.example.echatmobile.system.EchatApplication
-import java.lang.RuntimeException
 
-class LoginFragment : BaseFragment<LoginViewModel, LoginFragmentBinding>(),
-    View.OnFocusChangeListener {
+class LoginFragment : BaseFragment<LoginViewModel, LoginFragmentBinding>() {
     override fun viewModel(): Class<LoginViewModel> = LoginViewModel::class.java
     override fun layoutId(): Int = R.layout.login_fragment
 
@@ -25,37 +21,29 @@ class LoginFragment : BaseFragment<LoginViewModel, LoginFragmentBinding>(),
             .getLoginViewModelFactory()
 
 
-    override fun handleExtendedObservers(baseEvent: BaseEvent<BaseEventTypeInterface>) {
-        when (baseEvent.eventType) {
-            AuthorizationEvents.CHANGE_AUTHORIZATION_BUTTON -> changeLoginButton(baseEvent.eventType.data())
+    override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
+        when (baseEvent) {
+            is ChangeAuthorizationButtonEvent -> changeLoginButton(
+                baseEvent.color,
+                baseEvent.clickable
+            )
             else -> throw RuntimeException("Unknown event type")
         }
     }
 
-    private fun changeLoginButton(authorizationButtonEventData: ChangeAuthorizationButtonEventData) {
-        binding.loginButton.setBackgroundColor(authorizationButtonEventData.color)
-        binding.loginButton.isEnabled = authorizationButtonEventData.clickable
+    private fun changeLoginButton(color: Int, clickable: Boolean) {
+        binding.loginButton.setBackgroundColor(color)
+        binding.loginButton.isEnabled = clickable
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initListeners()
+        initBinding()
     }
 
-    private fun initListeners() {
-        binding.editTextUsername.onFocusChangeListener = this
-        binding.editTextPassword.onFocusChangeListener = this
-        binding.goToRegisterButton.setOnClickListener { viewModel.onRegisterButtonClick() }
-        binding.loginButton.setOnClickListener {
-            viewModel.onLoginButtonClick(
-                binding.editTextUsername.text.toString(),
-                binding.editTextPassword.text.toString()
-            )
-        }
-    }
-
-    override fun onFocusChange(v: View, hasFocus: Boolean) {
-        viewModel.baseInputFieldRefocused(hasFocus)
+    private fun initBinding() {
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
     }
 }

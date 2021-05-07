@@ -28,10 +28,22 @@ interface EchatRestAPI {
         @Query("id") id: Long
     ): Call<UserWithoutPassword>
 
+    @GET("profile/get/by-name")
+    fun getProfilesByQuery(
+        @Query("key") key: String,
+        @Query("name") name: String
+    ): Call<UserWithoutPasswordList>
+
     @GET("chat/get/by-participant")
     fun getChatsByParticipantId(
         @Query("key") key: String,
         @Query("id") participantId: Long
+    ): Call<ChatList>
+
+    @GET("chat/get/by-name")
+    fun getChatsByQuery(
+        @Query("key") key: String,
+        @Query("name") name: String
     ): Call<ChatList>
 
     @POST("chat/create")
@@ -40,13 +52,19 @@ interface EchatRestAPI {
         @Query("name") name: String
     ): Call<Chat>
 
-    @GET("chat/message/get-history")
+    @POST("chat/join")
+    fun joinToChat(
+        @Query("key") key: String,
+        @Query("id") chatId: Long
+    ): Call<Any>
+
+    @GET("message/get-history")
     fun getMessageHistory(
         @Query("key") key: String,
         @Query("chat-id") chatId: Long
     ): Call<MessageList>
 
-    @POST("chat/message/write")
+    @POST("message/write")
     fun writeMessage(
         @Query("key") key: String,
         @Query("chat-id") chatId: Long,
@@ -54,16 +72,41 @@ interface EchatRestAPI {
         @Query(value = "to-message-id") toMessageId: Long
     ): Call<Any>
 
-    @POST("chat/message/write")
+    @POST("message/write")
     fun writeMessage(
         @Query("key") key: String,
         @Query("chat-id") chatId: Long,
         @Query("text") text: String
     ): Call<Any>
 
-    @POST("chat/message/read")
+    @POST("message/read")
     fun setMessageRead(
         @Query("key") key: String,
         @Query("id") messageId: Long
+    ): Call<Any>
+
+    @GET("message/not-read")
+    fun getNotReadMessages(@Query("key") key: String): Call<MessageList>
+
+    @GET("invite/get/all")
+    fun getInvites(@Query("key") key: String): Call<InviteList>
+
+    @POST("invite")
+    fun invite(
+        @Query("key") key: String,
+        @Query("chat-id") chatId: Long,
+        @Query("id") userId: Long
+    ): Call<Any>
+
+    @POST("invite/accept")
+    fun acceptInvite(
+        @Query("key") key: String,
+        @Query("id") invitationId: Long
+    ): Call<Any>
+
+    @POST("invite/decline")
+    fun declineInvite(
+        @Query("key") key: String,
+        @Query("id") invitationId: Long
     ): Call<Any>
 }

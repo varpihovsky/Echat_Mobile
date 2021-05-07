@@ -53,6 +53,14 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
         return response?.body()
     }
 
+    fun getUserProfileByQuery(query: String): List<UserWithoutPassword> {
+        val currentUser = getCurrentUserProfile()?.let { UserWithoutPassword(it.id, it.login) }
+        val response = executeCallAndCheckForErrors {
+            echatRestAPI.getProfilesByQuery(authorizationKey.key, query)
+        }
+        return response?.body()?.response?.filter { it != currentUser } ?: emptyList()
+    }
+
     fun getChatsByParticipantId(id: Long): List<Chat> {
         val response = executeCallAndCheckForErrors {
             echatRestAPI.getChatsByParticipantId(
@@ -63,10 +71,21 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
         return response?.body()?.response ?: emptyList()
     }
 
+    fun getChatsByQuery(query: String): List<Chat> {
+        val response = executeCallAndCheckForErrors(2) {
+            echatRestAPI.getChatsByQuery(authorizationKey.key, query)
+        }
+        return response?.body()?.response ?: emptyList()
+    }
+
     fun createChat(name: String): Chat? {
         val response =
-            executeCallAndCheckForErrors { echatRestAPI.createChat(authorizationKey.key, name) }
+            executeCallAndCheckForErrors(1) { echatRestAPI.createChat(authorizationKey.key, name) }
         return response?.body()
+    }
+
+    fun joinToChat(chatId: Long) {
+        executeCallAndCheckForErrors { echatRestAPI.joinToChat(authorizationKey.key, chatId) }
     }
 
     fun getMessageHistory(chatId: Long): List<Message> {
@@ -97,6 +116,41 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
                 authorizationKey.key,
                 messageId
             )
+        }
+    }
+
+    fun getNotReadMessages(): List<Message> {
+        val response = executeCallAndCheckForErrors {
+            echatRestAPI.getNotReadMessages(authorizationKey.key)
+        }
+        return response?.body()?.response ?: emptyList()
+    }
+
+    fun getCurrentUserChatList() = getCurrentUserProfile()?.id?.let { getChatsByParticipantId(it) }
+
+    fun getCurrentUserInvites(): List<Invite> {
+        val response =
+            executeCallAndCheckForErrors {
+                echatRestAPI.getInvites(authorizationKey.key)
+            }
+        return response?.body()?.response ?: emptyList()
+    }
+
+    fun invite(chatId: Long, userId: Long) {
+        executeCallAndCheckForErrors {
+            echatRestAPI.invite(authorizationKey.key, chatId, userId)
+        }
+    }
+
+    fun acceptInvite(inviteId: Long) {
+        executeCallAndCheckForErrors {
+            echatRestAPI.acceptInvite(authorizationKey.key, inviteId)
+        }
+    }
+
+    fun declineInvite(inviteId: Long) {
+        executeCallAndCheckForErrors {
+            echatRestAPI.declineInvite(authorizationKey.key, inviteId)
         }
     }
 
