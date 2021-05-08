@@ -11,6 +11,7 @@ import com.example.echatmobile.model.entities.Chat
 
 class RoomListAdapter(var roomList: List<Chat>, private val itemClickObject: ItemClickObject) :
     RecyclerView.Adapter<RoomListAdapter.ViewHolder>() {
+    private var isShown = true
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val binding = DataBindingUtil.bind<RoomItemBinding>(view)
@@ -32,6 +33,10 @@ class RoomListAdapter(var roomList: List<Chat>, private val itemClickObject: Ite
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding?.roomItemTitle?.text = roomList[position].name
+        if (!isShown) {
+            holder.binding?.roomMoreButton?.visibility = View.GONE
+            holder.binding?.roomUnreadMessagesCount?.visibility = View.GONE
+        }
         initListeners(holder)
     }
 
@@ -59,6 +64,11 @@ class RoomListAdapter(var roomList: List<Chat>, private val itemClickObject: Ite
     }
 
     override fun getItemCount(): Int = roomList.size
+
+    fun setButtonsShown(boolean: Boolean) {
+        isShown = boolean
+        this.notifyDataSetChanged()
+    }
 }
 
 interface ItemClickObject {

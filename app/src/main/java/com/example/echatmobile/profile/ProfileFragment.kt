@@ -20,6 +20,7 @@ class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>()
     override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
         when (baseEvent) {
             is NavigateEvent -> navigate(baseEvent.destination)
+            is HideUnnecessaryDataEvent -> hideUnnecessary()
         }
     }
 
@@ -29,6 +30,11 @@ class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>()
         } catch (e: IllegalArgumentException) {
             // Same button clicked. Nothing to do.
         }
+    }
+
+    private fun hideUnnecessary() {
+        binding.profileChatsButton.visibility = View.GONE
+        binding.profileInvitesButton.visibility = View.GONE
     }
 
     override fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory =
@@ -59,6 +65,8 @@ class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>()
         navController =
             (childFragmentManager.findFragmentById(R.id.profile_result_fragment) as NavHostFragment).navController
     }
+
+    fun getViewModel() = viewModel
 
     companion object {
         const val PROFILE_ID_KEY = "profile_id"

@@ -3,6 +3,7 @@ package com.example.echatmobile.profile
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.echatmobile.R
 import com.example.echatmobile.model.EchatModel
 import com.example.echatmobile.model.entities.UserWithoutPassword
@@ -20,7 +21,8 @@ class ProfileViewModel @Inject constructor(
     BaseViewModel(application) {
     val data by lazy { Data() }
     private val user = MutableLiveData<UserWithoutPassword>()
-
+    private var isUnnecessaryDataShown = true
+    private val callbacks = mutableListOf<(Long) -> Unit>()
 
     inner class Data {
         val user: LiveData<UserWithoutPassword> = this@ProfileViewModel.user
@@ -28,9 +30,10 @@ class ProfileViewModel @Inject constructor(
 
     fun loadProfileData(profileId: Long?) {
         GlobalScope.launch(Dispatchers.IO) {
-            if (profileId == null) {
+            if (profileId == null || profileId == echatModel.getCurrentUserProfile()?.id) {
                 handleCurrentProfile()
             } else {
+                isUnnecessaryDataShown = false
                 handleProfile(profileId)
             }
         }
@@ -39,15 +42,24 @@ class ProfileViewModel @Inject constructor(
     private fun handleCurrentProfile() {
         echatModel.getCurrentUserProfile()?.let {
             UserWithoutPassword(it.id, it.login)
-        }?.let { postData(it) }
+        }?.let {
+            viewModelScope.launch {
+                user.value = it
+                executeCallbacks()
+            }
+        }
     }
 
     private fun handleProfile(profileId: Long) {
-        echatModel.getUserProfileById(profileId)?.let { postData(it) }
-    }
-
-    private fun postData(userWithoutPassword: UserWithoutPassword) {
-        user.postValue(userWithoutPassword)
+        viewModelScope.launch {
+            baseEventLiveData.value = BaseEvent(HideUnnecessaryDataEvent())
+        }
+        echatModel.getUserProfileById(profileId)?.let {
+            viewModelScope.launch {
+                user.value = it
+                executeCallbacks()
+            }
+        }
     }
 
     fun onNewChatButtonClick() {
@@ -63,4 +75,19 @@ class ProfileViewModel @Inject constructor(
         baseEventLiveData.value =
             BaseEvent(NavigateEvent(R.id.action_profileInvitesFragment_to_profileRoomsFragment))
     }
+
+    fun addOnUserLoadCallback(callback: (Long) -> Unit) {
+        if (user.value?.id != null) {
+            user.value?.let { callback(it.id) }
+            return
+        }
+        callbacks.add(callback)
+    }
+
+    private fun executeCallbacks() {
+        callbacks.forEach { user.value?.id?.let(it) }
+        callbacks.clear()
+    }
+
+    fun isUnnecessaryDataShown() = isUnnecessaryDataShown
 }

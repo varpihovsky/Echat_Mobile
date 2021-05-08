@@ -166,7 +166,12 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
                 response = block.invoke().execute()
                 return@repeat
             } catch (e: Exception) {
+                Log.d(DEBUG_PREFIX, e.message, e)
                 reauthorize(response)
+
+                if (it == repeatCount) {
+                    throw e
+                }
             }
             checkError(response)
         }
