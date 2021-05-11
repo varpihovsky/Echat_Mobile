@@ -4,6 +4,8 @@ import android.app.Application
 import android.graphics.Color
 import android.os.Bundle
 import com.example.echatmobile.R
+import com.example.echatmobile.di.DaggerContextComponent
+import com.example.echatmobile.di.modules.ContextModule
 import com.example.echatmobile.model.EchatModel
 import com.example.echatmobile.profile.ProfileFragment.Companion.PROFILE_ID_KEY
 import com.example.echatmobile.system.BaseEvent
@@ -18,6 +20,12 @@ class LoginViewModel @Inject constructor(
     application: Application,
     private val echatModel: EchatModel
 ) : BaseViewModel(application) {
+
+    init {
+        DaggerContextComponent.builder().contextModule(ContextModule(application)).build()
+            .inject(echatModel)
+    }
+
     fun onRegisterButtonClick() {
         navigate(R.id.action_loginFragment_to_registerFragment)
     }

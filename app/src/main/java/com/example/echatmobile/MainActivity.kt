@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.echatmobile.databinding.ActivityMainBinding
 import com.example.echatmobile.di.scopes.ActivityScope
+import com.example.echatmobile.system.ServiceScheduler
 
 @ActivityScope
 class MainActivity : AppCompatActivity() {
@@ -13,10 +14,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        startServices()
     }
 
-//    override fun onBackPressed() {
-//        super.onBackPressed()
-//        Navigation.findNavController(this, R.id.navigation_fragment).navigateUp()
-//    }
+    private fun startServices() {
+        startMessageService()
+    }
+
+    private fun startMessageService() {
+        ServiceScheduler(this).scheduleMessageService()
+    }
 }

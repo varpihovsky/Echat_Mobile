@@ -1,5 +1,6 @@
 package com.example.echatmobile.model
 
+import android.content.Context
 import android.util.Log
 import com.example.echatmobile.api.EchatRestAPI
 import com.example.echatmobile.model.entities.*
@@ -10,25 +11,27 @@ import javax.inject.Inject
 
 class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
     val currentUserLogin: String
-        get() = login
+        get() = authorizationSaver.getLoginAndPassword().first
 
-    private lateinit var authorizationKey: Authorization
-    private lateinit var login: String
-    private lateinit var password: String
+    private val authorizationKey: Authorization
+        get() = authorizationSaver.getAuthorization()
+
+    @Inject
+    lateinit var context: Context
+
+    private val authorizationSaver by lazy { EchatAuthorizationSaver(context) }
 
     fun authorize(login: String, password: String) {
         checkInternetConnection()
-
-        this.login = login
-        this.password = password
-
         val response = echatRestAPI.getAuthorizationKey(login, password).execute()
         if (!response.isSuccessful) {
             throw WrongLoginOrPasswordException("Wrong login or password")
         }
+
         response.body()?.let {
-            authorizationKey = it
-            Log.d(DEBUG_PREFIX, "Authorization key: $authorizationKey")
+            Log.d(DEBUG_PREFIX, "Authorization key: $it")
+            saveAuthorizationData(it)
+            authorizationSaver.saveLoginAndPassword(login, password)
         }
     }
 
@@ -192,8 +195,15 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
 
     private fun <T> reauthorize(response: Response<T>?) {
         if (response?.code() == FORBIDDEN) {
-            authorize(login, password)
+            authorizationSaver.getLoginAndPassword().let {
+                authorize(it.first, it.second)
+            }
         }
+    }
+
+
+    private fun saveAuthorizationData(authorization: Authorization) {
+        authorizationSaver.saveAuthorization(authorization)
     }
 
     companion object {
