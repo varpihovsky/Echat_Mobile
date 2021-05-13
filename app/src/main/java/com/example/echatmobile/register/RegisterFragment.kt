@@ -5,21 +5,18 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.RegisterFragmentBinding
-import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
+import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.login.ChangeAuthorizationButtonEvent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
-import com.example.echatmobile.system.EchatApplication
 
 class RegisterFragment : BaseFragment<RegisterViewModel, RegisterFragmentBinding>(),
     View.OnFocusChangeListener {
     override fun viewModel(): Class<RegisterViewModel> = RegisterViewModel::class.java
     override fun layoutId(): Int = R.layout.register_fragment
-    override fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory =
-        EchatApplication.instance
-            .daggerApplicationComponent
-            .plus(EchatViewModelFactoryModule())
-            .getRegisterViewModelFactory()
+
+    override fun viewModelFactorySelector(): (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory) =
+        provideViewModelSelector { getRegisterViewModelFactory() }
 
     override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
         when (baseEvent) {

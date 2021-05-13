@@ -8,12 +8,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.NewChatFragmentBinding
-import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
+import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.model.entities.Chat
 import com.example.echatmobile.model.entities.UserWithoutPassword
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
-import com.example.echatmobile.system.EchatApplication
 
 class NewChatFragment : BaseFragment<NewChatViewModel, NewChatFragmentBinding>(),
     AdapterView.OnItemSelectedListener,
@@ -23,12 +22,8 @@ class NewChatFragment : BaseFragment<NewChatViewModel, NewChatFragmentBinding>()
 
     override fun viewModel(): Class<NewChatViewModel> = NewChatViewModel::class.java
     override fun layoutId(): Int = R.layout.new_chat_fragment
-
-    override fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory =
-        EchatApplication.instance
-            .daggerApplicationComponent
-            .plus(EchatViewModelFactoryModule())
-            .getNewChatViewModelFactory()
+    override fun viewModelFactorySelector(): (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory) =
+        provideViewModelSelector { getNewChatViewModelFactory() }
 
     override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
         when (baseEvent) {

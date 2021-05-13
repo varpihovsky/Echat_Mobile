@@ -6,12 +6,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.InviteFragmentBinding
-import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
+import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.model.entities.UserWithoutPassword
 import com.example.echatmobile.new_chat.RemoveDataListItemEvent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
-import com.example.echatmobile.system.EchatApplication
 
 class InviteFragment : BaseFragment<InviteViewModel, InviteFragmentBinding>(),
     InviteAdapter.InviteButtonClickListener {
@@ -20,11 +19,8 @@ class InviteFragment : BaseFragment<InviteViewModel, InviteFragmentBinding>(),
 
     override fun viewModel(): Class<InviteViewModel> = InviteViewModel::class.java
 
-    override fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory =
-        EchatApplication.instance
-            .daggerApplicationComponent
-            .plus(EchatViewModelFactoryModule())
-            .getInviteViewModelFactory()
+    override fun viewModelFactorySelector(): (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory) =
+        provideViewModelSelector { getInviteViewModelFactory() }
 
     override fun layoutId(): Int = R.layout.invite_fragment
 

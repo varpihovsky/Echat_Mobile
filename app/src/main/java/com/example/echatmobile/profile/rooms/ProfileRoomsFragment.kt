@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ProfileRoomsFragmentBinding
-import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
+import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.model.entities.Chat
 import com.example.echatmobile.new_chat.RemoveDataListItemEvent
 import com.example.echatmobile.profile.ItemClickObject
@@ -14,7 +14,6 @@ import com.example.echatmobile.profile.ProfileFragment
 import com.example.echatmobile.profile.RoomListAdapter
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
-import com.example.echatmobile.system.EchatApplication
 
 class ProfileRoomsFragment : BaseFragment<ProfileRoomsViewModel, ProfileRoomsFragmentBinding>(),
     ItemClickObject {
@@ -24,10 +23,8 @@ class ProfileRoomsFragment : BaseFragment<ProfileRoomsViewModel, ProfileRoomsFra
 
     override fun viewModel(): Class<ProfileRoomsViewModel> = ProfileRoomsViewModel::class.java
 
-    override fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory? =
-        EchatApplication.instance.daggerApplicationComponent
-            .plus(EchatViewModelFactoryModule())
-            .getProfileRoomsViewModelFactory()
+    override fun viewModelFactorySelector(): (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory) =
+        provideViewModelSelector { getProfileRoomsViewModelFactory() }
 
     override fun layoutId(): Int = R.layout.profile_rooms_fragment
 
