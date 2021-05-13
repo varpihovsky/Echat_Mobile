@@ -54,6 +54,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
     implementation 'com.google.dagger:dagger:2.34'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.work:work-runtime-ktx:2.5.0"
     kapt 'com.google.dagger:dagger-compiler:2.34'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

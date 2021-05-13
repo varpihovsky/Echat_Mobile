@@ -4,19 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <fragment
-            android:id="@+id/navigation_fragment"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/main_activity_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            app:navGraph="@navigation/navigation"
-            app:defaultNavHost="true"/>
+            android:layout_height="wrap_content"
+            android:background="@color/design_default_color_primary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    </FrameLayout>
+        <fragment
+            android:layout_width="@dimen/constraint_layout_assign_res"
+            android:layout_height="0dp"
+            android:id="@+id/navigation_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:maxWidth="@dimen/constraint_layout_assign_res"
+            app:defaultNavHost="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/main_activity_toolbar"
+            app:navGraph="@navigation/navigation" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </layout>

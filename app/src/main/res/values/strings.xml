@@ -31,6 +31,7 @@
     <string name="room_search_create_button_text">create</string>
     <string name="profile_invites_button_text">Invites</string>
     <string name="room_invite_button_text">Invite</string>
+    <string name="logout_action_title">Logout</string>
     <string-array name="search_type">
         <item>Rooms</item>
         <item>Users</item>

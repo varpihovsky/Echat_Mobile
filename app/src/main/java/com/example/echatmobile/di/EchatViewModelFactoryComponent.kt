@@ -1,5 +1,6 @@
 package com.example.echatmobile.di
 
+import com.example.echatmobile.MainActivityViewModelFactory
 import com.example.echatmobile.chat.ChatViewModelFactory
 import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
 import com.example.echatmobile.invite.InviteViewModelFactory
@@ -13,6 +14,8 @@ import dagger.Subcomponent
 
 @Subcomponent(modules = [EchatViewModelFactoryModule::class])
 interface EchatViewModelFactoryComponent {
+    fun getMainActivityViewModelFactory(): MainActivityViewModelFactory
+
     fun getLoginViewModelFactory(): LoginViewModelFactory
 
     fun getRegisterViewModelFactory(): RegisterViewModelFactory

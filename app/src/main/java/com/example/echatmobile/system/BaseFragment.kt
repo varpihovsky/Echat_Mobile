@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import com.example.echatmobile.MainActivity
@@ -30,6 +31,7 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
 
     private var _nav: NavController? = null
     private var isNavControllerInjected = false
+    private val onCreatedCallbacks = mutableListOf<() -> Unit>()
 
     protected abstract fun viewModel(): Class<T>
     protected abstract fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory?
@@ -77,11 +79,6 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
         initBaseObservers()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        isNavControllerInjected = false
-    }
-
     private fun initViewModel() {
         viewModel = if (viewModelFactory() == null) {
             ViewModelProvider(this).get(viewModel())
@@ -92,6 +89,21 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
 
     private fun initBaseObservers() {
         viewModel.baseData.baseEventLiveData.observe(viewLifecycleOwner) { handleBaseEvent(it) }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        runTasks()
+    }
+
+    private fun runTasks() {
+        onCreatedCallbacks.forEach { it() }
+        onCreatedCallbacks.clear()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        isNavControllerInjected = false
     }
 
     private fun handleBaseEvent(baseEvent: BaseEvent<BaseEventTypeInterface>) {
@@ -120,6 +132,19 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
     private fun navigate(action: Int, data: Bundle?) {
         navigationController.navigate(action, data)
     }
+
+    fun addOnCreatedTask(task: () -> Unit) {
+        if (isTaskCanRun()) {
+            task()
+            return
+        }
+        onCreatedCallbacks.add(task)
+    }
+
+    private fun isTaskCanRun() =
+        listOf(Lifecycle.State.RESUMED, Lifecycle.State.STARTED).contains(
+            lifecycle.currentState
+        )
 
     companion object {
         const val TOAST_SHORT = Toast.LENGTH_SHORT

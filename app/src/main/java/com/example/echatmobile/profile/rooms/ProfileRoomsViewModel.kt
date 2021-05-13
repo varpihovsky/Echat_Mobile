@@ -30,15 +30,28 @@ class ProfileRoomsViewModel @Inject constructor(
         val dataList: LiveData<List<Chat>> = this@ProfileRoomsViewModel.dataList
     }
 
-    fun onFragmentCreated() {
-        if (dataList.value == null) {
-            GlobalScope.launch(Dispatchers.IO) { initDataList() }
+    fun onFragmentCreated(profileId: Long?) {
+        if (dataList.value == null && profileId == null) {
+            GlobalScope.launch(Dispatchers.IO) { initCurrentUserDataList() }
+        }
+        if (dataList.value == null && profileId != null) {
+            GlobalScope.launch { initUserProfileList(profileId) }
         }
     }
 
-    private fun initDataList() {
+    private fun initCurrentUserDataList() {
         try {
             echatModel.getCurrentUserChatList()?.let {
+                viewModelScope.launch { dataList.value = it }
+            }
+        } catch (e: Exception) {
+            viewModelScope.launch { e.message?.let { makeToast(it, TOAST_SHORT) } }
+        }
+    }
+
+    private fun initUserProfileList(profileId: Long) {
+        try {
+            echatModel.getChatsByParticipantId(profileId).let {
                 viewModelScope.launch { dataList.value = it }
             }
         } catch (e: Exception) {
@@ -53,7 +66,7 @@ class ProfileRoomsViewModel @Inject constructor(
     }
 
     fun onItemRemoveClick(chat: Chat) {
-        // Chat leaving function not implemented on server
+        // Chat leaving function is not implemented on server
         dataList.value?.let {
             baseEventLiveData.value = BaseEvent(RemoveDataListItemEvent(it.indexOf(chat)))
             dataList.value = it.toMutableList().apply { remove(chat) }

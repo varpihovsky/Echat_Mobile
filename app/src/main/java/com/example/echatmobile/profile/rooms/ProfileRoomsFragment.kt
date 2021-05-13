@@ -10,6 +10,7 @@ import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
 import com.example.echatmobile.model.entities.Chat
 import com.example.echatmobile.new_chat.RemoveDataListItemEvent
 import com.example.echatmobile.profile.ItemClickObject
+import com.example.echatmobile.profile.ProfileFragment
 import com.example.echatmobile.profile.RoomListAdapter
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
@@ -19,6 +20,7 @@ class ProfileRoomsFragment : BaseFragment<ProfileRoomsViewModel, ProfileRoomsFra
     ItemClickObject {
     private val dataList = mutableListOf<Chat>()
     private var listenToDataListEvents = true
+    private lateinit var profileFragment: ProfileFragment
 
     override fun viewModel(): Class<ProfileRoomsViewModel> = ProfileRoomsViewModel::class.java
 
@@ -44,15 +46,26 @@ class ProfileRoomsFragment : BaseFragment<ProfileRoomsViewModel, ProfileRoomsFra
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initRecyclerView()
-        initObservers()
+        (parentFragment?.parentFragment as ProfileFragment).addOnCreatedTask {
+            profileFragment = parentFragment?.parentFragment as ProfileFragment
 
-        viewModel.onFragmentCreated()
+            profileFragment.getViewModel().addOnUserLoadCallback {
+                initRecyclerView()
+                initObservers()
+
+                viewModel.onFragmentCreated(it)
+            }
+        }
     }
 
     private fun initRecyclerView() {
         binding.profileRoomList.layoutManager = LinearLayoutManager(context)
-        binding.profileRoomList.adapter = RoomListAdapter(dataList, this)
+        binding.profileRoomList.adapter = RoomListAdapter(dataList, this).let {
+            if (!profileFragment.getViewModel().isUnnecessaryDataShown()) {
+                it.setButtonsShown(false)
+            }
+            it
+        }
     }
 
     private fun initObservers() {

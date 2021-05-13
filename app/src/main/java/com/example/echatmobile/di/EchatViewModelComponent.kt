@@ -1,5 +1,6 @@
 package com.example.echatmobile.di
 
+import com.example.echatmobile.MainActivityViewModel
 import com.example.echatmobile.chat.ChatViewModel
 import com.example.echatmobile.di.modules.EchatViewModelModule
 import com.example.echatmobile.di.scopes.ViewModelScope
@@ -18,6 +19,8 @@ import dagger.Component
     modules = [EchatViewModelModule::class]
 )
 interface EchatViewModelComponent {
+    fun provideMainActivityViewModel(): MainActivityViewModel
+
     fun provideLoginViewModel(): LoginViewModel
 
     fun provideRegisterViewModel(): RegisterViewModel
