@@ -1,6 +1,7 @@
 package com.example.echatmobile.di.modules
 
 import android.app.Application
+import com.example.echatmobile.MainActivityViewModel
 import com.example.echatmobile.chat.ChatViewModel
 import com.example.echatmobile.di.scopes.ViewModelScope
 import com.example.echatmobile.invite.InviteViewModel
@@ -18,7 +19,13 @@ import dagger.Provides
 class EchatViewModelModule {
     @ViewModelScope
     @Provides
-    fun getLoginViewModel(application: Application, echatModel: EchatModel) = LoginViewModel(application, echatModel)
+    fun getMainActivityViewModel(application: Application, echatModel: EchatModel) =
+        MainActivityViewModel(echatModel, application)
+
+    @ViewModelScope
+    @Provides
+    fun getLoginViewModel(application: Application, echatModel: EchatModel) =
+        LoginViewModel(application, echatModel)
 
     @ViewModelScope
     @Provides

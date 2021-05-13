@@ -17,7 +17,7 @@ class ServiceScheduler(private val context: Context) {
                 Intent(context, MessageBroadcastReceiver::class.java),
                 0
             )
-        if (alarmManager != null && pendingIntent != null) {
+        if (pendingIntent != null) {
             alarmManager.setAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 System.currentTimeMillis() + 60000,

@@ -40,6 +40,7 @@ class LoginFragment : BaseFragment<LoginViewModel, LoginFragmentBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         initBinding()
+        viewModel.onFragmentCreated()
     }
 
     private fun initBinding() {

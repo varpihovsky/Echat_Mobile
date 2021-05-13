@@ -44,6 +44,17 @@ class EchatAuthorizationSaver(private val context: Context) {
         preferences.getString(PASSWORD_STRING, null) ?: throwWasNotSavedException()
     )
 
+    fun clear() {
+        with(preferences.edit()) {
+            remove(LOGIN_STRING)
+            remove(KEY_STRING)
+            remove(ID_LONG)
+            remove(PASSWORD_STRING)
+            remove(CREATED_STRING)
+            apply()
+        }
+    }
+
     private fun throwWasNotSavedException(): Nothing {
         throw RuntimeException("Values was not saved")
     }

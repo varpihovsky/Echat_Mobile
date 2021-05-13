@@ -1,6 +1,7 @@
 package com.example.echatmobile.di.modules
 
 import android.app.Application
+import com.example.echatmobile.MainActivityViewModelFactory
 import com.example.echatmobile.chat.ChatViewModelFactory
 import com.example.echatmobile.invite.InviteViewModelFactory
 import com.example.echatmobile.login.LoginViewModelFactory
@@ -14,6 +15,10 @@ import dagger.Provides
 
 @Module
 class EchatViewModelFactoryModule {
+    @Provides
+    fun provideMainActivityViewModelFactory(application: Application) =
+        MainActivityViewModelFactory(application)
+
     @Provides
     fun provideLoginFactory(application: Application) = LoginViewModelFactory(application)
 

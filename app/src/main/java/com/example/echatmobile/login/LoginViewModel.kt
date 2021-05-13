@@ -60,4 +60,12 @@ class LoginViewModel @Inject constructor(
         baseEventLiveData.value =
             BaseEvent(ChangeAuthorizationButtonEvent(Color.parseColor("#6200EE"), true))
     }
+
+    fun onFragmentCreated() {
+        GlobalScope.launch(Dispatchers.IO) {
+            if (echatModel.isLoginPresent()) {
+                navigate(R.id.action_loginFragment_to_profileFragment)
+            }
+        }
+    }
 }

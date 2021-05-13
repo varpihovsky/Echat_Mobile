@@ -21,6 +21,20 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
 
     private val authorizationSaver by lazy { EchatAuthorizationSaver(context) }
 
+    fun isLoginPresent(): Boolean =
+        try {
+            authorizationSaver.getLoginAndPassword().let {
+                authorize(it.first, it.second)
+            }
+            true
+        } catch (e: Exception) {
+            false
+        }
+
+    fun logout() {
+        authorizationSaver.clear()
+    }
+
     fun authorize(login: String, password: String) {
         checkInternetConnection()
         val response = echatRestAPI.getAuthorizationKey(login, password).execute()
