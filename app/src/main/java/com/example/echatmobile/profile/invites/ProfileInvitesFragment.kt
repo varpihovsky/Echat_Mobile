@@ -6,12 +6,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ProfileInvitesFragmentBinding
-import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
+import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.model.entities.Invite
 import com.example.echatmobile.new_chat.RemoveDataListItemEvent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
-import com.example.echatmobile.system.EchatApplication
 
 class ProfileInvitesFragment :
     BaseFragment<ProfileInvitesViewModel, ProfileInvitesFragmentBinding>(),
@@ -20,10 +19,9 @@ class ProfileInvitesFragment :
     private var listenToDataListEvents = true
 
     override fun viewModel(): Class<ProfileInvitesViewModel> = ProfileInvitesViewModel::class.java
-    override fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory? =
-        EchatApplication.instance.daggerApplicationComponent
-            .plus(EchatViewModelFactoryModule())
-            .getProfileInvitesViewModelFactory()
+
+    override fun viewModelFactorySelector(): (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory) =
+        provideViewModelSelector { getProfileInvitesViewModelFactory() }
 
     override fun layoutId(): Int = R.layout.profile_invites_fragment
 

@@ -5,21 +5,16 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.LoginFragmentBinding
-import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
+import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
-import com.example.echatmobile.system.EchatApplication
 
 class LoginFragment : BaseFragment<LoginViewModel, LoginFragmentBinding>() {
     override fun viewModel(): Class<LoginViewModel> = LoginViewModel::class.java
     override fun layoutId(): Int = R.layout.login_fragment
 
-    override fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory =
-        EchatApplication.instance
-            .daggerApplicationComponent
-            .plus(EchatViewModelFactoryModule())
-            .getLoginViewModelFactory()
-
+    override fun viewModelFactorySelector(): (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory) =
+        provideViewModelSelector { getLoginViewModelFactory() }
 
     override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
         when (baseEvent) {

@@ -11,10 +11,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ChatFragmentBinding
-import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
+import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
-import com.example.echatmobile.system.EchatApplication
 import com.example.echatmobile.system.services.MessageService
 
 class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
@@ -58,11 +57,8 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
 
     override fun layoutId(): Int = R.layout.chat_fragment
 
-    override fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory =
-        EchatApplication.instance
-            .daggerApplicationComponent
-            .plus(EchatViewModelFactoryModule())
-            .getChatViewModelFactory()
+    override fun viewModelFactorySelector(): (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory) =
+        provideViewModelSelector { getChatViewModelFactory() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

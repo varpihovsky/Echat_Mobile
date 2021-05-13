@@ -13,30 +13,40 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import com.example.echatmobile.MainActivity
+import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.di.modules.BaseFragmentModule
+import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
 import com.example.echatmobile.di.modules.MainActivityModule
 import javax.inject.Inject
 
 abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment() {
-    protected val navigationController: NavController
+    private val navController: NavController
         get() {
-            if (_nav == null) {
+            if (mNavController == null) {
                 inject()
             }
-            return _nav ?: throw UninitializedPropertyAccessException()
+            return mNavController ?: throw UninitializedPropertyAccessException()
         }
 
     protected lateinit var viewModel: T
     protected lateinit var binding: B
 
-    private var _nav: NavController? = null
+    private var mNavController: NavController? = null
     private var isNavControllerInjected = false
     private val onCreatedCallbacks = mutableListOf<() -> Unit>()
 
     protected abstract fun viewModel(): Class<T>
-    protected abstract fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory?
     protected abstract fun layoutId(): Int
     protected abstract fun handleExtendedObservers(baseEvent: BaseEventTypeInterface)
+
+    /**
+     * This method used for initialization of ViewModelFactory which is used for getting ViewModel.
+     * To get return value use provideViewModelFactorySelector.
+     * @param viewModelFactorySelector
+     * @return Unit
+     */
+    protected abstract fun viewModelFactorySelector(): (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory)?
+
 
     private fun inject() {
         EchatApplication.instance
@@ -53,7 +63,7 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
         } else {
             throw RuntimeException("This is internal method, you cant invoke it by your own")
         }
-        _nav = navController
+        mNavController = navController
     }
 
     override fun onCreateView(
@@ -80,12 +90,22 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
     }
 
     private fun initViewModel() {
-        viewModel = if (viewModelFactory() == null) {
+        viewModel = if (viewModelFactorySelector() == null) {
             ViewModelProvider(this).get(viewModel())
         } else {
-            viewModelFactory()?.let { ViewModelProvider(this, it).get(viewModel()) }!!
+            getViewModelFactoryFromSelector()
         }
     }
+
+    private fun getViewModelFactoryFromSelector() =
+        viewModelFactorySelector()!!
+            // Not safe call is not dangerous here because this method is surrounded by null check
+            .invoke(
+                EchatApplication.instance
+                    .daggerApplicationComponent
+                    .plus(EchatViewModelFactoryModule())
+            )
+            .let { ViewModelProvider(this, it).get(viewModel()) }
 
     private fun initBaseObservers() {
         viewModel.baseData.baseEventLiveData.observe(viewLifecycleOwner) { handleBaseEvent(it) }
@@ -130,7 +150,7 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
     }
 
     private fun navigate(action: Int, data: Bundle?) {
-        navigationController.navigate(action, data)
+        navController.navigate(action, data)
     }
 
     fun addOnCreatedTask(task: () -> Unit) {
@@ -149,5 +169,10 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
     companion object {
         const val TOAST_SHORT = Toast.LENGTH_SHORT
         const val TOAST_LONG = Toast.LENGTH_LONG
+
+        fun provideViewModelSelector(selector: EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory):
+                (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory) =
+            selector
+
     }
 }

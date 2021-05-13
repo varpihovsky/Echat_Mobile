@@ -7,16 +7,19 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ProfileFragmentBinding
-import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
+import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
-import com.example.echatmobile.system.EchatApplication
 
 class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>() {
     private lateinit var navController: NavController
 
     override fun viewModel(): Class<ProfileViewModel> = ProfileViewModel::class.java
     override fun layoutId(): Int = R.layout.profile_fragment
+
+    override fun viewModelFactorySelector(): (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory) =
+        provideViewModelSelector { getProfileViewModelFactory() }
+
     override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
         when (baseEvent) {
             is NavigateEvent -> navigate(baseEvent.destination)
@@ -36,12 +39,6 @@ class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>()
         binding.profileChatsButton.visibility = View.GONE
         binding.profileInvitesButton.visibility = View.GONE
     }
-
-    override fun viewModelFactory(): ViewModelProvider.AndroidViewModelFactory =
-        EchatApplication.instance
-            .daggerApplicationComponent
-            .plus(EchatViewModelFactoryModule())
-            .getProfileViewModelFactory()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
