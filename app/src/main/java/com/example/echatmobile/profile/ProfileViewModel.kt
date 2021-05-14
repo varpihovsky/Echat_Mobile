@@ -9,6 +9,8 @@ import com.example.echatmobile.model.EchatModel
 import com.example.echatmobile.model.entities.UserWithoutPassword
 import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.BaseViewModel
+import com.example.echatmobile.system.components.events.HideUnnecessaryDataEvent
+import com.example.echatmobile.system.components.events.NavigateEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

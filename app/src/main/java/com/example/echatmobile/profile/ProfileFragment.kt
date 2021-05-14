@@ -10,6 +10,8 @@ import com.example.echatmobile.databinding.ProfileFragmentBinding
 import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
+import com.example.echatmobile.system.components.events.HideUnnecessaryDataEvent
+import com.example.echatmobile.system.components.events.NavigateEvent
 
 class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>() {
     private lateinit var navController: NavController

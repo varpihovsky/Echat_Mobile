@@ -13,11 +13,13 @@ import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ChatFragmentBinding
 import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.system.BaseEventTypeInterface
-import com.example.echatmobile.system.BaseFragment
+import com.example.echatmobile.system.components.ListableFragment
+import com.example.echatmobile.system.components.events.ClearChatFieldEvent
+import com.example.echatmobile.system.components.events.MoveDownEvent
+import com.example.echatmobile.system.components.events.NotificationEvent
 import com.example.echatmobile.system.services.MessageService
 
-class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
-    private val dataList = mutableListOf<MessageDTO>()
+class ChatFragment : ListableFragment<ChatViewModel, ChatFragmentBinding, MessageDTO>() {
     private var mBound = false
     private lateinit var binder: MessageService.MessageServiceBinder
 
@@ -40,6 +42,7 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
         when (baseEvent) {
             is ClearChatFieldEvent -> binding.chatTextField.setText("")
             is MoveDownEvent -> moveDown()
+            else -> super.handleExtendedObservers(baseEvent)
         }
     }
 
@@ -59,6 +62,14 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
 
     override fun viewModelFactorySelector(): (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory) =
         provideViewModelSelector { getChatViewModelFactory() }
+
+    override fun onListReplacedCallback() {
+        binding.chatMessageList.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onListUpdatedCallback(updateType: String, index: Int) {
+        binding.chatMessageList.adapter?.notifyItemInserted(index)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -84,26 +95,9 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
     }
 
     private fun initObservers() {
-        viewModel.data.messagesLiveData.observe(viewLifecycleOwner) {
-            showChat(it)
-        }
-        viewModel.data.chatUpdateLiveData.observe(viewLifecycleOwner) {
-            it?.let { messageDTO -> loadRecentMessage(messageDTO) }
-        }
         viewModel.data.notificationEvent.observe(viewLifecycleOwner) {
             it.get()?.let { it1 -> processNotificationEvent(it1) }
         }
-    }
-
-    private fun showChat(messages: List<MessageDTO>) {
-        dataList.removeAll { true }
-        dataList.addAll(messages)
-        binding.chatMessageList.adapter?.notifyDataSetChanged()
-    }
-
-    private fun loadRecentMessage(messageDTO: MessageDTO) {
-        dataList.add(messageDTO)
-        binding.chatMessageList.adapter?.notifyItemInserted(dataList.size - 1)
     }
 
     private fun initArguments() {
@@ -133,7 +127,7 @@ class ChatFragment : BaseFragment<ChatViewModel, ChatFragmentBinding>() {
 
     override fun onDetach() {
         super.onDetach()
-        viewModel.stopBackgroundThreads()
+        viewModel.onFragmentDetach()
     }
 
     companion object {

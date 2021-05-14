@@ -12,23 +12,29 @@ import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.model.entities.Chat
 import com.example.echatmobile.model.entities.UserWithoutPassword
 import com.example.echatmobile.system.BaseEventTypeInterface
-import com.example.echatmobile.system.BaseFragment
+import com.example.echatmobile.system.components.ListableFragment
 
-class NewChatFragment : BaseFragment<NewChatViewModel, NewChatFragmentBinding>(),
+class NewChatFragment : ListableFragment<NewChatViewModel, NewChatFragmentBinding, Any>(),
     AdapterView.OnItemSelectedListener,
     SearchResultRecyclerViewAdapter.SearchResultButtonClickListener {
-    private val dataList = mutableListOf<Any>()
-    private var reactToDataListChanges = true
 
     override fun viewModel(): Class<NewChatViewModel> = NewChatViewModel::class.java
     override fun layoutId(): Int = R.layout.new_chat_fragment
     override fun viewModelFactorySelector(): (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory) =
         provideViewModelSelector { getNewChatViewModelFactory() }
 
+    override fun onListReplacedCallback() {
+        binding.roomSearchResultList.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onListUpdatedCallback(updateType: String, index: Int) {
+        binding.roomSearchResultList.adapter?.notifyItemRemoved(index)
+    }
+
     override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
         when (baseEvent) {
             is ViewVisibilityEvent -> processVisibility(baseEvent.view, baseEvent.visibility)
-            is RemoveDataListItemEvent -> removeDataListItem(baseEvent.position)
+            else -> super.handleExtendedObservers(baseEvent)
         }
     }
 
@@ -38,19 +44,12 @@ class NewChatFragment : BaseFragment<NewChatViewModel, NewChatFragmentBinding>()
         }
     }
 
-    private fun removeDataListItem(position: Int) {
-        reactToDataListChanges = false
-        dataList.removeAt(position)
-        binding.roomSearchResultList.adapter?.notifyItemRemoved(position)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initBinding()
         initSpinner()
         initRecyclerView()
-        initObservers()
     }
 
     private fun initBinding() {
@@ -73,21 +72,6 @@ class NewChatFragment : BaseFragment<NewChatViewModel, NewChatFragmentBinding>()
     private fun initRecyclerView() {
         binding.roomSearchResultList.layoutManager = LinearLayoutManager(context)
         binding.roomSearchResultList.adapter = SearchResultRecyclerViewAdapter(dataList, this)
-    }
-
-    private fun initObservers() {
-        viewModel.data.dataList.observe(viewLifecycleOwner) { handleList(it) }
-    }
-
-    private fun handleList(list: List<Any>) {
-        if (!reactToDataListChanges) {
-            reactToDataListChanges = true
-            return
-        }
-
-        dataList.clear()
-        dataList.addAll(list)
-        binding.roomSearchResultList.adapter?.notifyDataSetChanged()
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

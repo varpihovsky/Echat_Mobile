@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.echatmobile.system.BaseFragment.Companion.TOAST_SHORT
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -50,6 +51,14 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
     protected fun navigate(action: Int, data: Bundle? = null) {
         GlobalScope.launch(Dispatchers.Main) {
             baseEventLiveData.value = BaseEvent(NavigateEvent(action, data))
+        }
+    }
+
+    protected fun handleIO(block: () -> Unit) {
+        try {
+            block()
+        } catch (e: Exception) {
+            e.message?.let { makeToast(it, TOAST_SHORT) }
         }
     }
 }

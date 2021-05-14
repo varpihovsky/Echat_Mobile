@@ -40,7 +40,7 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
     protected abstract fun handleExtendedObservers(baseEvent: BaseEventTypeInterface)
 
     /**
-     * This method used for initialization of ViewModelFactory which is used for getting ViewModel.
+     * This method used for initialization of ViewModelFactory which is used for initialization of ViewModel.
      * To get return value use provideViewModelFactorySelector.
      * @param viewModelFactorySelector
      * @return Unit
@@ -165,6 +165,7 @@ abstract class BaseFragment<T : BaseViewModel, B : ViewDataBinding> : Fragment()
         listOf(Lifecycle.State.RESUMED, Lifecycle.State.STARTED).contains(
             lifecycle.currentState
         )
+
 
     companion object {
         const val TOAST_SHORT = Toast.LENGTH_SHORT

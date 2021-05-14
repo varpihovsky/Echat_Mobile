@@ -8,15 +8,11 @@ import com.example.echatmobile.R
 import com.example.echatmobile.databinding.InviteFragmentBinding
 import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.model.entities.UserWithoutPassword
-import com.example.echatmobile.new_chat.RemoveDataListItemEvent
-import com.example.echatmobile.system.BaseEventTypeInterface
-import com.example.echatmobile.system.BaseFragment
+import com.example.echatmobile.system.components.ListableFragment
 
-class InviteFragment : BaseFragment<InviteViewModel, InviteFragmentBinding>(),
+class InviteFragment :
+    ListableFragment<InviteViewModel, InviteFragmentBinding, UserWithoutPassword>(),
     InviteAdapter.InviteButtonClickListener {
-    private val dataList = mutableListOf<UserWithoutPassword>()
-    private var listenToDataListChanges = true
-
     override fun viewModel(): Class<InviteViewModel> = InviteViewModel::class.java
 
     override fun viewModelFactorySelector(): (EchatViewModelFactoryComponent.() -> ViewModelProvider.AndroidViewModelFactory) =
@@ -24,16 +20,12 @@ class InviteFragment : BaseFragment<InviteViewModel, InviteFragmentBinding>(),
 
     override fun layoutId(): Int = R.layout.invite_fragment
 
-    override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
-        when (baseEvent) {
-            is RemoveDataListItemEvent -> removeItem(baseEvent.position)
-        }
+    override fun onListReplacedCallback() {
+        binding.inviteSearchResult.adapter?.notifyDataSetChanged()
     }
 
-    private fun removeItem(position: Int) {
-        listenToDataListChanges = false
-        dataList.removeAt(position)
-        binding.inviteSearchResult.adapter?.notifyItemRemoved(position)
+    override fun onListUpdatedCallback(updateType: String, index: Int) {
+        binding.inviteSearchResult.adapter?.notifyItemRemoved(index)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -42,7 +34,6 @@ class InviteFragment : BaseFragment<InviteViewModel, InviteFragmentBinding>(),
         initBinding()
         initRecyclerView()
         initArguments()
-        initObservers()
     }
 
     private fun initBinding() {
@@ -63,21 +54,6 @@ class InviteFragment : BaseFragment<InviteViewModel, InviteFragmentBinding>(),
         arguments?.let {
             viewModel.setChatId(it.getLong(CHAT_ID_PARAM))
         }
-    }
-
-    private fun initObservers() {
-        viewModel.data.dataList.observe(viewLifecycleOwner) {
-            showSearchResult(it)
-        }
-    }
-
-    private fun showSearchResult(list: List<UserWithoutPassword>) {
-        if (listenToDataListChanges) {
-            dataList.clear()
-            dataList.addAll(list)
-            binding.inviteSearchResult.adapter?.notifyDataSetChanged()
-        }
-        listenToDataListChanges = true
     }
 
     companion object {
