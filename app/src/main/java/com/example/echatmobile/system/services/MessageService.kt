@@ -9,9 +9,7 @@ import androidx.navigation.NavDeepLinkBuilder
 import com.example.echatmobile.MainActivity
 import com.example.echatmobile.R
 import com.example.echatmobile.chat.ChatFragment
-import com.example.echatmobile.di.DaggerContextComponent
-import com.example.echatmobile.di.modules.ContextModule
-import com.example.echatmobile.model.entities.Message
+import com.example.echatmobile.model.entities.MessageDTO
 import com.example.echatmobile.system.EchatApplication
 import com.example.echatmobile.system.ServiceScheduler
 import kotlinx.coroutines.Dispatchers
@@ -20,13 +18,7 @@ import kotlinx.coroutines.launch
 
 class MessageService : Service() {
     private var filteredChatId: Long? = null
-    private val echatModel by lazy {
-        EchatApplication.instance.daggerEchatModelComponent.provideModel().apply {
-            DaggerContextComponent.builder().contextModule(
-                ContextModule(this@MessageService)
-            ).build().inject(this)
-        }
-    }
+    private val echatModel by lazy { EchatApplication.instance.daggerEchatModelComponent.provideModel() }
 
     private val serviceScheduler = ServiceScheduler(this)
 
@@ -61,17 +53,17 @@ class MessageService : Service() {
         }
     }
 
-    private fun showMassages(list: List<Message>) {
+    private fun showMassages(list: List<MessageDTO>) {
         list.forEach { message ->
             createNotification("${message.sender.login}: ${message.text}", message)
         }
     }
 
-    private fun setMessagesRead(list: List<Message>) {
+    private fun setMessagesRead(list: List<MessageDTO>) {
         list.forEach { message -> echatModel.setMessageRead(message.id) }
     }
 
-    private fun createNotification(text: String, message: Message) =
+    private fun createNotification(text: String, messageDTO: MessageDTO) =
         Notification.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(NOTIFICATION_TITLE)
@@ -83,7 +75,7 @@ class MessageService : Service() {
                     .setArguments(Bundle().apply {
                         putLong(
                             ChatFragment.CHAT_ID_ARGUMENT,
-                            message.chat.id
+                            messageDTO.chat.id
                         )
                     })
                     .setGraph(R.navigation.navigation)

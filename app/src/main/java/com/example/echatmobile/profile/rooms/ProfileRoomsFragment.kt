@@ -7,14 +7,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ProfileRoomsFragmentBinding
 import com.example.echatmobile.di.EchatViewModelFactoryComponent
-import com.example.echatmobile.model.entities.Chat
+import com.example.echatmobile.model.entities.ChatDTO
 import com.example.echatmobile.profile.ItemClickObject
 import com.example.echatmobile.profile.ProfileFragment
 import com.example.echatmobile.profile.RoomListAdapter
-import com.example.echatmobile.system.components.ListableFragment
+import com.example.echatmobile.system.components.ui.ListableFragment
 
 class ProfileRoomsFragment :
-    ListableFragment<ProfileRoomsViewModel, ProfileRoomsFragmentBinding, Chat>(),
+    ListableFragment<ProfileRoomsViewModel, ProfileRoomsFragmentBinding, ChatDTO>(),
     ItemClickObject {
     private lateinit var profileFragment: ProfileFragment
 
@@ -57,15 +57,15 @@ class ProfileRoomsFragment :
         }
     }
 
-    override fun onItemClick(chat: Chat) {
-        viewModel.onItemClick(chat)
+    override fun onItemClick(chatDTO: ChatDTO) {
+        viewModel.onItemClick(chatDTO)
     }
 
-    override fun onItemRemoveClick(chat: Chat) {
-        viewModel.onItemRemoveClick(chat)
+    override fun onItemRemoveClick(chatDTO: ChatDTO) {
+        viewModel.onItemRemoveClick(chatDTO)
     }
 
-    override fun onInviteClick(chat: Chat) {
-        viewModel.onInviteClick(chat)
+    override fun onInviteClick(chatDTO: ChatDTO) {
+        viewModel.onInviteClick(chatDTO)
     }
 }

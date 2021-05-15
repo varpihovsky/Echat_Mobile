@@ -3,10 +3,8 @@ package com.example.echatmobile.chat
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.echatmobile.di.DaggerContextComponent
-import com.example.echatmobile.di.modules.ContextModule
 import com.example.echatmobile.model.EchatModel
-import com.example.echatmobile.model.entities.Message
+import com.example.echatmobile.model.entities.MessageDTO
 import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.components.ListableViewModel
 import com.example.echatmobile.system.components.events.ClearChatFieldEvent
@@ -22,19 +20,13 @@ import kotlin.properties.Delegates
 class ChatViewModel @Inject constructor(
     application: Application,
     private val echatModel: EchatModel
-) : ListableViewModel<MessageDTO>(application) {
-
-    init {
-        DaggerContextComponent.builder().contextModule(ContextModule(application)).build()
-            .inject(echatModel)
-    }
-
+) : ListableViewModel<MessageViewModelDTO>(application) {
     val data by lazy { Data() }
     private val notificationEvent = MutableLiveData<BaseEvent<NotificationEvent>>()
     private var chatId by Delegates.notNull<Long>()
     private var areBackgroundThreadsRunning = true
 
-    private val showedRecentMessages = mutableListOf<MessageDTO>()
+    private val showedRecentMessages = mutableListOf<MessageViewModelDTO>()
 
     inner class Data {
         val notificationEvent: LiveData<BaseEvent<NotificationEvent>> =
@@ -51,15 +43,18 @@ class ChatViewModel @Inject constructor(
     private suspend fun handleNotReadMessages() {
         while (areBackgroundThreadsRunning) {
             delay(CHAT_LOADING_DELAY)
-            val recentMessages = echatModel.getNotReadMessages()
-                .map { mapMessageAligning(it) }
-                .filter { it.chat.id == chatId && !showedRecentMessages.contains(it) }
-            showedRecentMessages.addAll(recentMessages)
-            notifyUIAboutChatUpdates(recentMessages)
+            val recentMessages: List<MessageViewModelDTO> = listOf()
+            handleIO {
+                echatModel.getNotReadMessages()
+                    .map { mapMessageAligning(it) }
+                    .filter { it.chatDTO.id == chatId && !showedRecentMessages.contains(it) }
+                showedRecentMessages.addAll(recentMessages)
+                notifyUIAboutChatUpdates(recentMessages)
+            }
         }
     }
 
-    private fun notifyUIAboutChatUpdates(recentMessages: List<MessageDTO>) {
+    private fun notifyUIAboutChatUpdates(recentMessages: List<MessageViewModelDTO>) {
         recentMessages.forEach { addToList(it) }
     }
 
@@ -79,8 +74,8 @@ class ChatViewModel @Inject constructor(
     private fun retrieveMessagesList(chatId: Long) =
         echatModel.getMessageHistory(chatId).map { mapMessageAligning(it) }
 
-    private fun mapMessageAligning(message: Message): MessageDTO =
-        message.toDTO { messageDTO ->
+    private fun mapMessageAligning(messageDTO: MessageDTO): MessageViewModelDTO =
+        messageDTO.toDTO { messageDTO ->
             if (messageDTO.sender.login == echatModel.currentUserLogin) {
                 ALIGN_RIGHT
             } else {
@@ -89,7 +84,7 @@ class ChatViewModel @Inject constructor(
 
         }
 
-    fun onMessageRead(messageDTO: MessageDTO) {
+    fun onMessageRead(messageDTO: MessageViewModelDTO) {
         GlobalScope.launch(Dispatchers.IO) { handleIO { echatModel.setMessageRead(messageDTO.id) } }
     }
 

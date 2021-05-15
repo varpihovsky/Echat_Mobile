@@ -3,13 +3,14 @@ package com.example.echatmobile.model.db
 import androidx.room.*
 import com.example.echatmobile.model.db.entities.*
 import com.example.echatmobile.model.db.entities.relations.InviteAndChat
+import com.example.echatmobile.model.db.entities.relations.MessageAndMessageAndChatAndUser
 
 @Dao
 interface RoomDAO {
 
     /* Chat */
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertChat(chat: Chat)
 
     @Delete
@@ -19,11 +20,14 @@ interface RoomDAO {
     fun updateChat(chat: Chat)
 
     @Query("SELECT * FROM Chat WHERE id = :chatId")
-    fun getChatById(chatId: Long)
+    fun getChatById(chatId: Long): Chat?
+
+    @Query("SELECT * FROM Chat WHERE id = (SELECT chatId FROM ChatParticipantsCrossRef WHERE userId = :userId)")
+    fun getChatsByUserId(userId: Long): List<Chat>
 
     /* Invite */
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertInvite(invite: Invite)
 
     @Delete
@@ -37,7 +41,7 @@ interface RoomDAO {
 
     @Transaction
     @Query("SELECT * FROM Invite WHERE inviteId = :inviteId")
-    fun getCompoundInvite(inviteId: Long): InviteAndChat
+    fun getCompoundInvite(inviteId: Long): InviteAndChat?
 
     @Transaction
     @Query("SELECT * FROM Invite")
@@ -45,7 +49,7 @@ interface RoomDAO {
 
     /* Message */
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMessage(message: Message)
 
     @Delete
@@ -54,15 +58,22 @@ interface RoomDAO {
     @Update
     fun updateMessage(message: Message)
 
-    @Query("SELECT * FROM Message WHERE id = :chatId")
+    @Query("SELECT * FROM Message WHERE id = :id")
+    fun getMessageById(id: Long): Message?
+
+    @Query("SELECT * FROM Message WHERE chatId = :chatId")
     fun getMessagesByChat(chatId: Long): List<Message>
 
-    @Query("SELECT * FROM Message WHERE id = :chatId")
-    fun getCompoundMessagesByChat(chatId: Long)
+    @Transaction
+    @Query("SELECT * FROM Message WHERE chatId = :chatId")
+    fun getCompoundMessagesByChat(chatId: Long): List<MessageAndMessageAndChatAndUser>
+
+    @Query("SELECT * FROM Message WHERE id = (SELECT chatId FROM ReadHistory WHERE status = '${ReadHistory.NOT_READ}')")
+    fun getNotReadMessages(): List<Message>
 
     /* User */
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertUser(user: User)
 
     @Update
@@ -75,11 +86,17 @@ interface RoomDAO {
     fun getAllUsers(): List<User>
 
     @Query("SELECT * FROM User WHERE id = :userId")
-    fun getUserById(userId: Long): User
+    fun getUserById(userId: Long): User?
+
+    @Query("SELECT * FROM User WHERE id = (SELECT userId FROM ChatParticipantsCrossRef WHERE chatId = :chatId)")
+    fun getParticipantsByChatId(chatId: Long): List<User>
+
+    @Query("SELECT * FROM User WHERE id = (SELECT userId FROM ChatAdminsCrossRef WHERE chatId = :chatId)")
+    fun getAdminsByChatId(chatId: Long): List<User>
 
     /* ChatAdminsCrossRef */
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertChatAdminsCrossRef(chatAdminsCrossRef: ChatAdminsCrossRef)
 
     @Update
@@ -96,7 +113,7 @@ interface RoomDAO {
 
     /* ChatParticipantsCrossRef */
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertChatParticipantsCrossRef(chatParticipantsCrossRef: ChatParticipantsCrossRef)
 
     @Update
@@ -113,7 +130,7 @@ interface RoomDAO {
 
     /* ReadHistory */
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertReadHistory(readHistory: ReadHistory)
 
     @Update
@@ -123,5 +140,5 @@ interface RoomDAO {
     fun deleteReadHistory(readHistory: ReadHistory)
 
     @Query("SELECT * FROM ReadHistory WHERE messageId = :messageId")
-    fun getReadHistoryByMessageId(messageId: Long): ReadHistory
+    fun getReadHistoryByMessageId(messageId: Long): ReadHistory?
 }

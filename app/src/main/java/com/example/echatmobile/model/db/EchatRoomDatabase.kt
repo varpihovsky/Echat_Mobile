@@ -1,6 +1,7 @@
 package com.example.echatmobile.model.db
 
 import androidx.room.Database
+import androidx.room.RoomDatabase
 import com.example.echatmobile.model.db.entities.*
 
 @Database(
@@ -13,8 +14,9 @@ import com.example.echatmobile.model.db.entities.*
         ReadHistory::class,
         User::class
     ],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
-abstract class RoomDatabase {
+abstract class EchatRoomDatabase : RoomDatabase() {
     abstract val roomDAO: RoomDAO
 }

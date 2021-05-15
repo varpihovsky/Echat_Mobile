@@ -7,11 +7,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ProfileInvitesFragmentBinding
 import com.example.echatmobile.di.EchatViewModelFactoryComponent
-import com.example.echatmobile.model.entities.Invite
-import com.example.echatmobile.system.components.ListableFragment
+import com.example.echatmobile.model.entities.InviteDTO
+import com.example.echatmobile.system.components.ui.ListableFragment
 
 class ProfileInvitesFragment :
-    ListableFragment<ProfileInvitesViewModel, ProfileInvitesFragmentBinding, Invite>(),
+    ListableFragment<ProfileInvitesViewModel, ProfileInvitesFragmentBinding, InviteDTO>(),
     InvitesListAdapter.InvitesAdapterCallbacks {
 
     override fun viewModel(): Class<ProfileInvitesViewModel> = ProfileInvitesViewModel::class.java
@@ -41,11 +41,11 @@ class ProfileInvitesFragment :
         binding.profileRoomList.adapter = InvitesListAdapter(dataList, this)
     }
 
-    override fun onAcceptClick(invite: Invite) {
-        viewModel.onInviteAccept(invite)
+    override fun onAcceptClick(inviteDTO: InviteDTO) {
+        viewModel.onInviteAccept(inviteDTO)
     }
 
-    override fun onDeclineClick(invite: Invite) {
-        viewModel.onInviteDecline(invite)
+    override fun onDeclineClick(inviteDTO: InviteDTO) {
+        viewModel.onInviteDecline(inviteDTO)
     }
 }

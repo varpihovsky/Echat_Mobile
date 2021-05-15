@@ -7,9 +7,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.RoomItemBinding
-import com.example.echatmobile.model.entities.Chat
+import com.example.echatmobile.model.entities.ChatDTO
 
-class RoomListAdapter(var roomList: List<Chat>, private val itemClickObject: ItemClickObject) :
+class RoomListAdapter(var roomList: List<ChatDTO>, private val itemClickObject: ItemClickObject) :
     RecyclerView.Adapter<RoomListAdapter.ViewHolder>() {
     private var isShown = true
 
@@ -72,9 +72,9 @@ class RoomListAdapter(var roomList: List<Chat>, private val itemClickObject: Ite
 }
 
 interface ItemClickObject {
-    fun onItemClick(chat: Chat)
+    fun onItemClick(chatDTO: ChatDTO)
 
-    fun onItemRemoveClick(chat: Chat)
+    fun onItemRemoveClick(chatDTO: ChatDTO)
 
-    fun onInviteClick(chat: Chat)
+    fun onInviteClick(chatDTO: ChatDTO)
 }

@@ -13,13 +13,13 @@ import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ChatFragmentBinding
 import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.system.BaseEventTypeInterface
-import com.example.echatmobile.system.components.ListableFragment
 import com.example.echatmobile.system.components.events.ClearChatFieldEvent
 import com.example.echatmobile.system.components.events.MoveDownEvent
 import com.example.echatmobile.system.components.events.NotificationEvent
+import com.example.echatmobile.system.components.ui.ListableFragment
 import com.example.echatmobile.system.services.MessageService
 
-class ChatFragment : ListableFragment<ChatViewModel, ChatFragmentBinding, MessageDTO>() {
+class ChatFragment : ListableFragment<ChatViewModel, ChatFragmentBinding, MessageViewModelDTO>() {
     private var mBound = false
     private lateinit var binder: MessageService.MessageServiceBinder
 

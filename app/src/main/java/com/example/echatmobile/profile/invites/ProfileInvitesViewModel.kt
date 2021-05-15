@@ -2,7 +2,7 @@ package com.example.echatmobile.profile.invites
 
 import android.app.Application
 import com.example.echatmobile.model.EchatModel
-import com.example.echatmobile.model.entities.Invite
+import com.example.echatmobile.model.entities.InviteDTO
 import com.example.echatmobile.system.components.ListableViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -12,7 +12,7 @@ import javax.inject.Inject
 class ProfileInvitesViewModel @Inject constructor(
     application: Application,
     private val echatModel: EchatModel
-) : ListableViewModel<Invite>(application) {
+) : ListableViewModel<InviteDTO>(application) {
     fun onFragmentCreated() {
         if (isListEmpty()) {
             GlobalScope.launch(Dispatchers.IO) { handleIO { initDataList() } }
@@ -23,16 +23,32 @@ class ProfileInvitesViewModel @Inject constructor(
         addAllToList(echatModel.getCurrentUserInvites())
     }
 
-    fun onInviteAccept(invite: Invite) {
-        GlobalScope.launch(Dispatchers.IO) { handleIO { processInvite(invite) { acceptInvite(invite.id) } } }
+    fun onInviteAccept(inviteDTO: InviteDTO) {
+        GlobalScope.launch(Dispatchers.IO) {
+            handleIO {
+                processInvite(inviteDTO) {
+                    acceptInvite(
+                        inviteDTO.id
+                    )
+                }
+            }
+        }
     }
 
-    fun onInviteDecline(invite: Invite) {
-        GlobalScope.launch(Dispatchers.IO) { handleIO { processInvite(invite) { declineInvite(invite.id) } } }
+    fun onInviteDecline(inviteDTO: InviteDTO) {
+        GlobalScope.launch(Dispatchers.IO) {
+            handleIO {
+                processInvite(inviteDTO) {
+                    declineInvite(
+                        inviteDTO.id
+                    )
+                }
+            }
+        }
     }
 
-    private fun processInvite(invite: Invite, inviteMethod: EchatModel.() -> Unit) {
+    private fun processInvite(inviteDTO: InviteDTO, inviteMethod: EchatModel.() -> Unit) {
         inviteMethod(echatModel)
-        removeFromList(invite)
+        removeFromList(inviteDTO)
     }
 }

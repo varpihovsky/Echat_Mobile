@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.Toast
 import com.example.echatmobile.R
 import com.example.echatmobile.model.EchatModel
-import com.example.echatmobile.model.entities.Chat
+import com.example.echatmobile.model.entities.ChatDTO
 import com.example.echatmobile.model.entities.UserWithoutPassword
 import com.example.echatmobile.profile.ProfileFragment
 import com.example.echatmobile.system.BaseEvent
@@ -75,14 +75,14 @@ class NewChatViewModel @Inject constructor(
             BaseEvent(ViewVisibilityEvent(NewChatFragment.CREATE_BUTTON, View.VISIBLE))
     }
 
-    fun onChatButtonClick(chat: Chat) {
-        GlobalScope.launch(Dispatchers.IO) { handleIO { processChatJoining(chat) } }
+    fun onChatButtonClick(chatDTO: ChatDTO) {
+        GlobalScope.launch(Dispatchers.IO) { handleIO { processChatJoining(chatDTO) } }
     }
 
-    private fun processChatJoining(chat: Chat) {
-        echatModel.joinToChat(chat.id)
-        removeFromList(chat)
-        makeToast("Joined to chat '${chat.name}'", TOAST_SHORT)
+    private fun processChatJoining(chatDTO: ChatDTO) {
+        echatModel.joinToChat(chatDTO.id)
+        removeFromList(chatDTO)
+        makeToast("Joined to chat '${chatDTO.name}'", TOAST_SHORT)
     }
 
     fun onUserButtonClick(user: UserWithoutPassword) {

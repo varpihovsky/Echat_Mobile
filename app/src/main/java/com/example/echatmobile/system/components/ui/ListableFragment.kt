@@ -1,15 +1,16 @@
-package com.example.echatmobile.system.components
+package com.example.echatmobile.system.components.ui
 
 import android.os.Bundle
 import android.view.View
 import androidx.databinding.ViewDataBinding
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
+import com.example.echatmobile.system.components.ListableViewModel
 import com.example.echatmobile.system.components.events.UpdateListEvent
 import com.example.echatmobile.system.components.events.UpdateListEvent.Companion.ADD
 import com.example.echatmobile.system.components.events.UpdateListEvent.Companion.REMOVE
 
-abstract class ListableFragment<T : ListableViewModel<D>, B : ViewDataBinding, D> :
+abstract class ListableFragment<T : ListableViewModel<*>, B : ViewDataBinding, D> :
     BaseFragment<T, B>() {
 
     protected val dataList: MutableList<D> = mutableListOf()
@@ -45,7 +46,7 @@ abstract class ListableFragment<T : ListableViewModel<D>, B : ViewDataBinding, D
     }
 
     private fun initObservers() {
-        viewModel.listableData.dataList.observe(viewLifecycleOwner) { processListReplacing(it) }
+        viewModel.listableData.dataList.observe(viewLifecycleOwner) { processListReplacing(it as List<D>) }
     }
 
     private fun processListReplacing(list: List<D>) {

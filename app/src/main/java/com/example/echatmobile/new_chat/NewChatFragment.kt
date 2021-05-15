@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.NewChatFragmentBinding
 import com.example.echatmobile.di.EchatViewModelFactoryComponent
-import com.example.echatmobile.model.entities.Chat
+import com.example.echatmobile.model.entities.ChatDTO
 import com.example.echatmobile.model.entities.UserWithoutPassword
 import com.example.echatmobile.system.BaseEventTypeInterface
-import com.example.echatmobile.system.components.ListableFragment
+import com.example.echatmobile.system.components.ui.ListableFragment
 
 class NewChatFragment : ListableFragment<NewChatViewModel, NewChatFragmentBinding, Any>(),
     AdapterView.OnItemSelectedListener,
@@ -83,8 +83,8 @@ class NewChatFragment : ListableFragment<NewChatViewModel, NewChatFragmentBindin
 
     override fun onNothingSelected(parent: AdapterView<*>?) {}
 
-    override fun onChatButtonClick(chat: Chat) {
-        viewModel.onChatButtonClick(chat)
+    override fun onChatButtonClick(chatDTO: ChatDTO) {
+        viewModel.onChatButtonClick(chatDTO)
     }
 
     override fun onUserButtonClick(user: UserWithoutPassword) {

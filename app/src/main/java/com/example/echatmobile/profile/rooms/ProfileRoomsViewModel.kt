@@ -6,7 +6,7 @@ import com.example.echatmobile.R
 import com.example.echatmobile.chat.ChatFragment
 import com.example.echatmobile.invite.InviteFragment
 import com.example.echatmobile.model.EchatModel
-import com.example.echatmobile.model.entities.Chat
+import com.example.echatmobile.model.entities.ChatDTO
 import com.example.echatmobile.system.components.ListableViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class ProfileRoomsViewModel @Inject constructor(
     application: Application,
     private val echatModel: EchatModel
-) : ListableViewModel<Chat>(application) {
+) : ListableViewModel<ChatDTO>(application) {
 
     fun onFragmentCreated(profileId: Long?) {
         if (isListEmpty() && profileId == null) {
@@ -35,20 +35,20 @@ class ProfileRoomsViewModel @Inject constructor(
         addAllToList(echatModel.getChatsByParticipantId(profileId))
     }
 
-    fun onItemClick(chat: Chat) {
+    fun onItemClick(chatDTO: ChatDTO) {
         navigate(
             R.id.action_profileFragment_to_chatFragment,
-            Bundle().apply { putLong(ChatFragment.CHAT_ID_ARGUMENT, chat.id) })
+            Bundle().apply { putLong(ChatFragment.CHAT_ID_ARGUMENT, chatDTO.id) })
     }
 
-    fun onItemRemoveClick(chat: Chat) {
+    fun onItemRemoveClick(chatDTO: ChatDTO) {
         // Chat leaving function is not implemented on server
-        removeFromList(chat)
+        removeFromList(chatDTO)
     }
 
-    fun onInviteClick(chat: Chat) {
+    fun onInviteClick(chatDTO: ChatDTO) {
         navigate(
             R.id.action_profileFragment_to_inviteFragment,
-            Bundle().apply { putLong(InviteFragment.CHAT_ID_PARAM, chat.id) })
+            Bundle().apply { putLong(InviteFragment.CHAT_ID_PARAM, chatDTO.id) })
     }
 }

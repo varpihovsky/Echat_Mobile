@@ -20,7 +20,7 @@ interface EchatRestAPI {
     ): Call<Any>
 
     @GET("profile/get/by-key")
-    fun getProfileByKey(@Query("key") key: String): Call<User>
+    fun getProfileByKey(@Query("key") key: String): Call<UserDTO>
 
     @GET("profile/get/by-id")
     fun getProfileById(
@@ -38,31 +38,31 @@ interface EchatRestAPI {
     fun getChatsByParticipantId(
         @Query("key") key: String,
         @Query("id") participantId: Long
-    ): Call<ResponseList<Chat>>
+    ): Call<ResponseList<ChatDTO>>
 
     @GET("chat/get/by-name")
     fun getChatsByQuery(
         @Query("key") key: String,
         @Query("name") name: String
-    ): Call<ResponseList<Chat>>
+    ): Call<ResponseList<ChatDTO>>
 
     @POST("chat/create")
     fun createChat(
         @Query("key") key: String,
         @Query("name") name: String
-    ): Call<Chat>
+    ): Call<ChatDTO>
 
     @POST("chat/join")
     fun joinToChat(
         @Query("key") key: String,
         @Query("id") chatId: Long
-    ): Call<Any>
+    ): Call<ChatDTO>
 
     @GET("message/get-history")
     fun getMessageHistory(
         @Query("key") key: String,
         @Query("chat-id") chatId: Long
-    ): Call<ResponseList<Message>>
+    ): Call<ResponseList<MessageDTO>>
 
     @POST("message/write")
     fun writeMessage(
@@ -86,10 +86,10 @@ interface EchatRestAPI {
     ): Call<Any>
 
     @GET("message/not-read")
-    fun getNotReadMessages(@Query("key") key: String): Call<ResponseList<Message>>
+    fun getNotReadMessages(@Query("key") key: String): Call<ResponseList<MessageDTO>>
 
     @GET("invite/get/all")
-    fun getInvites(@Query("key") key: String): Call<ResponseList<Invite>>
+    fun getInvites(@Query("key") key: String): Call<ResponseList<InviteDTO>>
 
     @POST("invite")
     fun invite(
