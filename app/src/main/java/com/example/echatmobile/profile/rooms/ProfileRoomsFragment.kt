@@ -47,6 +47,18 @@ class ProfileRoomsFragment :
         }
     }
 
+//    override fun onStart() {
+//        super.onStart()
+//
+//        profileFragment = parentFragment?.parentFragment as ProfileFragment
+//
+//        profileFragment.getViewModel().addOnUserLoadCallback {
+//            initRecyclerView()
+//
+//            viewModel.onFragmentCreated(it)
+//        }
+//    }
+
     private fun initRecyclerView() {
         binding.profileRoomList.layoutManager = LinearLayoutManager(context)
         binding.profileRoomList.adapter = RoomListAdapter(dataList, this).let {

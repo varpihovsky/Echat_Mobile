@@ -46,7 +46,6 @@ class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>()
         super.onViewCreated(view, savedInstanceState)
 
         initBinding()
-        getProfileIdData()
         initNavController()
     }
 
@@ -55,14 +54,19 @@ class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>()
         binding.lifecycleOwner = viewLifecycleOwner
     }
 
-    private fun getProfileIdData() {
-        val profileId = arguments?.getLong(PROFILE_ID_KEY)
-        viewModel.loadProfileData(profileId)
-    }
-
     private fun initNavController() {
         navController =
             (childFragmentManager.findFragmentById(R.id.profile_result_fragment) as NavHostFragment).navController
+    }
+
+    override fun onStart() {
+        super.onStart()
+        getProfileIdData()
+    }
+
+    private fun getProfileIdData() {
+        val profileId = arguments?.getLong(PROFILE_ID_KEY)
+        viewModel.loadProfileData(profileId)
     }
 
     fun getViewModel() = viewModel

@@ -25,6 +25,9 @@ class ProfileRoomsViewModel @Inject constructor(
         if (isListEmpty() && profileId != null) {
             GlobalScope.launch(Dispatchers.IO) { handleIO { initUserProfileList(profileId) } }
         }
+        if (!isListEmpty()) {
+            GlobalScope.launch(Dispatchers.IO) { handleIO { updateList(profileId) } }
+        }
     }
 
     private fun initCurrentUserDataList() {
@@ -33,6 +36,20 @@ class ProfileRoomsViewModel @Inject constructor(
 
     private fun initUserProfileList(profileId: Long) {
         addAllToList(echatModel.getChatsByParticipantId(profileId))
+    }
+
+    private fun updateList(profileId: Long?) {
+        if (profileId != null) {
+            echatModel.getChatsByParticipantId(profileId)
+                .filter { listableData.dataList.value?.contains(it) == false }.forEach {
+                    addToList(it)
+                }
+        } else {
+            echatModel.getCurrentUserChatList()
+                ?.filter { listableData.dataList.value?.contains(it) == false }?.forEach {
+                    addToList(it)
+                }
+        }
     }
 
     fun onItemClick(chatDTO: ChatDTO) {

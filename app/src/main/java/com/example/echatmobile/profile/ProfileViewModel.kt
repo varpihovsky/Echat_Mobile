@@ -88,7 +88,6 @@ class ProfileViewModel @Inject constructor(
 
     private fun executeCallbacks() {
         callbacks.forEach { user.value?.id?.let(it) }
-        callbacks.clear()
     }
 
     fun isUnnecessaryDataShown() = isUnnecessaryDataShown
