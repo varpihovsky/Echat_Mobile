@@ -3,20 +3,28 @@ package com.example.echatmobile.model
 import com.example.echatmobile.model.db.EchatDatabase
 import com.example.echatmobile.model.entities.*
 import com.example.echatmobile.model.remote.EchatRemote
+import com.example.echatmobile.model.util.ConnectionListener
 import com.example.echatmobile.system.alsoHandleUnblocking
 import com.example.echatmobile.system.handleUnblocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class EchatModel @Inject constructor(
     private val echatRemote: EchatRemote,
     private val echatDatabase: EchatDatabase,
     private val authorizationSaver: EchatAuthorizationSaver
-) {
+) : ConnectionListener.ConnectionCallbacks {
     val currentUserLogin: String
         get() = authorizationSaver.getLoginAndPassword().first
 
     private val authorizationKey: Authorization
         get() = authorizationSaver.getAuthorization()
+
+    init {
+        ConnectionListener(this)
+    }
 
     fun isLoginPresent(): Boolean =
         try {
@@ -112,6 +120,8 @@ class EchatModel @Inject constructor(
             }
         } catch (e: NoInternetConnectionException) {
             echatDatabase.getMessagesByChat(chatId)
+        } catch (e: NullPointerException) {
+            echatDatabase.getMessagesByChat(chatId)
         }
 
     fun writeMessage(chatId: Long, text: String, toMessageId: Long? = null) {
@@ -166,4 +176,13 @@ class EchatModel @Inject constructor(
     }
 
     private fun isUserIdEqualsToCurrentUser(id: Long) = id == authorizationSaver.getCurrentUserId()
+    override fun onConnectionChange(state: Boolean) {
+        if (state) {
+            GlobalScope.launch(Dispatchers.IO) {
+                authorizationSaver.getLoginAndPassword().alsoHandleUnblocking {
+                    authorize(it.first, it.second)
+                }
+            }
+        }
+    }
 }

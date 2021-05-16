@@ -13,6 +13,6 @@ fun <T> handleUnblocking(block: () -> Unit) {
 }
 
 fun <T> T.alsoHandleUnblocking(block: (T) -> Unit): T {
-    GlobalScope.launch { block(this@alsoHandleUnblocking) }
+    GlobalScope.launch(Dispatchers.IO) { block(this@alsoHandleUnblocking) }
     return this
 }
