@@ -23,18 +23,19 @@ class ChatFragment : ListableFragment<ChatViewModel, ChatFragmentBinding, Messag
     private var mBound = false
     private lateinit var binder: MessageService.MessageServiceBinder
 
-    private val connection = object : ServiceConnection {
+    private val connection = MessageServiceConnection()
+
+    inner class MessageServiceConnection : ServiceConnection {
         var callback: (() -> Unit)? = null
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             binder = service as MessageService.MessageServiceBinder
             mBound = true
-            callback?.let { it() }
+            callback?.invoke()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
             mBound = false
         }
-
     }
 
     override fun viewModel(): Class<ChatViewModel> = ChatViewModel::class.java
@@ -128,6 +129,7 @@ class ChatFragment : ListableFragment<ChatViewModel, ChatFragmentBinding, Messag
     override fun onDetach() {
         super.onDetach()
         viewModel.onFragmentDetach()
+        context?.unbindService(connection)
     }
 
     companion object {

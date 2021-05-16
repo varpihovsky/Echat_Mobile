@@ -71,6 +71,9 @@ interface RoomDAO {
     @Query("SELECT * FROM Message WHERE id = (SELECT chatId FROM ReadHistory WHERE status = '${ReadHistory.NOT_READ}')")
     fun getNotReadMessages(): List<Message>
 
+    @Query("SELECT * FROM Message WHERE id = (SELECT chatId FROM ReadHistory WHERE status = '${ReadHistory.READ}')")
+    fun getReadMessages(): List<Message>
+
     /* User */
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

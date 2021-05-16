@@ -4,6 +4,7 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.*
+import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.NavDeepLinkBuilder
 import com.example.echatmobile.MainActivity
@@ -47,9 +48,15 @@ class MessageService : Service() {
     }
 
     private fun handleMessageList() {
-        echatModel.getNotReadMessages().filter { it.chat.id != filteredChatId }.let {
-            setMessagesRead(it)
-            GlobalScope.launch(Dispatchers.Main) { showMassages(it) }
+        val notifiedMessages = echatModel.getReadMessagesLocal()
+        try {
+            echatModel.getNotReadMessages()
+                .filter { it.chat.id != filteredChatId && !notifiedMessages.contains(it) }.let {
+                    setMessagesRead(it)
+                    GlobalScope.launch(Dispatchers.Main) { showMassages(it) }
+                }
+        } catch (e: Exception) {
+            e.message?.let { Log.d(EchatApplication.LOG_TAG, it) }
         }
     }
 
@@ -60,7 +67,7 @@ class MessageService : Service() {
     }
 
     private fun setMessagesRead(list: List<MessageDTO>) {
-        list.forEach { message -> echatModel.setMessageRead(message.id) }
+        list.forEach { message -> echatModel.setMessageReadLocal(message.id) }
     }
 
     private fun createNotification(text: String, messageDTO: MessageDTO) =
@@ -101,7 +108,7 @@ class MessageService : Service() {
         private const val NOTIFICATION_CHANNEL_NAME = "Echat mobile messaging"
         private const val NOTIFICATION_CHANNEL_DESCRIPTION =
             "This notification channel provides you" +
-                    "info about recent messages"
+                    " info about recent messages"
         private const val NOTIFICATION_TITLE = "Echat Mobile - new message"
     }
 }

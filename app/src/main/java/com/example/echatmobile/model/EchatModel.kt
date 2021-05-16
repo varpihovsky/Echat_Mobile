@@ -3,6 +3,8 @@ package com.example.echatmobile.model
 import com.example.echatmobile.model.db.EchatDatabase
 import com.example.echatmobile.model.entities.*
 import com.example.echatmobile.model.remote.EchatRemote
+import com.example.echatmobile.system.alsoHandleUnblocking
+import com.example.echatmobile.system.handleUnblocking
 import javax.inject.Inject
 
 class EchatModel @Inject constructor(
@@ -34,7 +36,7 @@ class EchatModel @Inject constructor(
     }
 
     fun authorize(login: String, password: String) {
-        val authorization = echatRemote.getAuthorization(login, password)?.also {
+        val authorization = echatRemote.getAuthorization(login, password)?.handleUnblocking {
             authorizationSaver.saveAuthorization(it)
             authorizationSaver.saveLoginAndPassword(login, password)
             echatRemote.setAuthorization(it)
@@ -46,22 +48,18 @@ class EchatModel @Inject constructor(
         echatRemote.register(login, password)
     }
 
-    fun getCurrentUserProfile(): UserWithoutPassword? {
-        var userDTO: UserWithoutPassword? = null
+    fun getCurrentUserProfile(): UserWithoutPassword? =
         try {
-            echatRemote.getUserProfileByAuthorizationKey(authorizationKey)?.let {
+            echatRemote.getUserProfileByAuthorizationKey(authorizationKey)?.alsoHandleUnblocking {
                 saveCurrentUser(it)
-                userDTO = UserWithoutPassword(it.id, it.login)
-            }
+            }?.let { UserWithoutPassword(it.id, it.login) }
         } catch (e: NoInternetConnectionException) {
             try {
-                userDTO = echatDatabase.getUserById(authorizationSaver.getCurrentUserId())
+                echatDatabase.getUserById(authorizationSaver.getCurrentUserId())
             } catch (e: Exception) {
                 throw e
             }
         }
-        return userDTO
-    }
 
     private fun saveCurrentUser(userDTO: UserDTO) {
         authorizationSaver.saveCurrentUserId(userDTO.id)
@@ -76,27 +74,27 @@ class EchatModel @Inject constructor(
         return echatRemote.getUserProfileByQuery(query).filter { it != getCurrentUserProfile() }
     }
 
-    fun getChatsByParticipantId(id: Long): List<ChatDTO> {
-        var chats: List<ChatDTO> = listOf()
+    fun getChatsByParticipantId(id: Long): List<ChatDTO> =
         try {
-            chats = echatRemote.getChatsByParticipantId(id)
-            if (isUserIdEqualsToCurrentUser(id)) {
-                chats.forEach { echatDatabase.addChat(it) }
+            echatRemote.getChatsByParticipantId(id).alsoHandleUnblocking {
+                if (isUserIdEqualsToCurrentUser(id)) {
+                    it.forEach { chatDTO -> echatDatabase.addChat(chatDTO) }
+                }
             }
         } catch (e: NoInternetConnectionException) {
             if (isUserIdEqualsToCurrentUser(id)) {
-                chats = echatDatabase.getChatsByUserId(id)
+                echatDatabase.getChatsByUserId(id)
+            } else {
+                throw RuntimeException()
             }
         }
-        return chats
-    }
 
     fun getChatsByQuery(query: String): List<ChatDTO> {
         return echatRemote.getChatsByQuery(query)
     }
 
     fun createChat(name: String): ChatDTO? {
-        return echatRemote.createChat(name)?.also {
+        return echatRemote.createChat(name)?.alsoHandleUnblocking {
             echatDatabase.addChat(it)
         }
     }
@@ -107,17 +105,14 @@ class EchatModel @Inject constructor(
         }
     }
 
-    fun getMessageHistory(chatId: Long): List<MessageDTO> {
-        var list: List<MessageDTO> = listOf()
+    fun getMessageHistory(chatId: Long): List<MessageDTO> =
         try {
-            list = echatRemote.getMessageHistory(chatId).onEach { messageDTO ->
-                echatDatabase.addMessage(messageDTO)
+            echatRemote.getMessageHistory(chatId).alsoHandleUnblocking {
+                it.forEach { messageDTO -> echatDatabase.addMessage(messageDTO) }
             }
         } catch (e: NoInternetConnectionException) {
-            list = echatDatabase.getMessagesByChat(chatId)
+            echatDatabase.getMessagesByChat(chatId)
         }
-        return list
-    }
 
     fun writeMessage(chatId: Long, text: String, toMessageId: Long? = null) {
         echatRemote.writeMessage(chatId, text, toMessageId)
@@ -132,19 +127,22 @@ class EchatModel @Inject constructor(
         echatDatabase.setMessageRead(messageId)
     }
 
-    fun getNotReadMessagesLocal(): List<MessageDTO> =
-        echatDatabase.getNotReadMessages()
+    fun getReadMessagesLocal(): List<MessageDTO> =
+        echatDatabase.getReadMessages()
 
     fun getNotReadMessages(): List<MessageDTO> {
-        return echatRemote.getNotReadMessages()
+        return echatRemote.getNotReadMessages().alsoHandleUnblocking {
+            it.forEach { message -> echatDatabase.addMessage(message) }
+        }
     }
 
-    fun getCurrentUserChatList() = getCurrentUserProfile()?.id?.let { getChatsByParticipantId(it) }
+    fun getCurrentUserChatList() = getCurrentUserProfile()?.id?.let {
+        getChatsByParticipantId(it)
+    }
 
     fun getCurrentUserInvites(): List<InviteDTO> {
-        return echatRemote.getCurrentUserInvites().also {
-            it.forEach { inviteDTO -> echatDatabase.addInvite(inviteDTO) }
-        }
+        return echatRemote.getCurrentUserInvites()
+            .onEach { inviteDTO -> echatDatabase.addInvite(inviteDTO) }
     }
 
     fun invite(chatId: Long, userId: Long) {

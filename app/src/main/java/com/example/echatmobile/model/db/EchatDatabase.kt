@@ -48,6 +48,9 @@ class EchatDatabase(private val roomDAO: RoomDAO) {
     fun getNotReadMessages(): List<MessageDTO> =
         roomDAO.getNotReadMessages().mapNotNull { mapMessageToDTO(it) }
 
+    fun getReadMessages(): List<MessageDTO> =
+        roomDAO.getReadMessages().mapNotNull { mapMessageToDTO(it) }
+
     fun addReadHistory(readHistory: ReadHistory) {
         roomDAO.insertReadHistory(readHistory)
     }

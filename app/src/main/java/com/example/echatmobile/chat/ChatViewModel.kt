@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.echatmobile.model.EchatModel
+import com.example.echatmobile.model.NoInternetConnectionException
 import com.example.echatmobile.model.entities.MessageDTO
 import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.components.ListableViewModel
@@ -43,11 +44,14 @@ class ChatViewModel @Inject constructor(
     private suspend fun handleNotReadMessages() {
         while (areBackgroundThreadsRunning) {
             delay(CHAT_LOADING_DELAY)
-            val recentMessages: List<MessageViewModelDTO> = listOf()
+            var recentMessages: List<MessageViewModelDTO> = listOf()
             handleIO {
-                echatModel.getNotReadMessages()
-                    .map { mapMessageAligning(it) }
-                    .filter { it.chatDTO.id == chatId && !showedRecentMessages.contains(it) }
+                try {
+                    recentMessages = echatModel.getNotReadMessages()
+                        .map { mapMessageAligning(it) }
+                        .filter { it.chatDTO.id == chatId && !showedRecentMessages.contains(it) }
+                } catch (e: NoInternetConnectionException) {
+                }
                 showedRecentMessages.addAll(recentMessages)
                 notifyUIAboutChatUpdates(recentMessages)
             }

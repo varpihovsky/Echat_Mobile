@@ -2,6 +2,7 @@ package com.example.echatmobile.model.remote
 
 import com.example.echatmobile.api.EchatRestAPI
 import com.example.echatmobile.model.NoInternetConnectionException
+import com.example.echatmobile.model.UnauthorizedException
 import com.example.echatmobile.model.entities.*
 import com.example.echatmobile.system.ConnectionManager
 import retrofit2.Call
@@ -105,11 +106,14 @@ class EchatRemote @Inject constructor(
     }
 
     fun setMessageRead(messageId: Long) {
-        executeCallAndCheckForErrors {
-            echatRestAPI.setMessageRead(
-                authorizationKey.key,
-                messageId
-            )
+        try {
+            executeCallAndCheckForErrors {
+                echatRestAPI.setMessageRead(
+                    authorizationKey.key,
+                    messageId
+                )
+            }
+        } catch (e: Exception) {
         }
     }
 
@@ -161,7 +165,11 @@ class EchatRemote @Inject constructor(
 
     private fun <T> checkError(response: Response<T>?) {
         if (response?.isSuccessful == false) {
-            throw RuntimeException(response.errorBody()?.string() + "\n" + response.message())
+            if (response.code() == 403) {
+                throw UnauthorizedException("Authorization invalidated (probably somebody logged in to your account)")
+            }
+            throw RuntimeException(response.code().toString())
         }
+
     }
 }

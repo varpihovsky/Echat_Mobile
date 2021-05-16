@@ -2,6 +2,7 @@ package com.example.echatmobile.system
 
 import android.app.Application
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -58,7 +59,8 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
         try {
             block()
         } catch (e: Exception) {
-            e.message?.let { makeToast(it, TOAST_SHORT) }
+            e.message?.let { makeToast("$it", TOAST_SHORT) }
+            Log.d(EchatApplication.LOG_TAG, Log.getStackTraceString(e))
         }
     }
 }
