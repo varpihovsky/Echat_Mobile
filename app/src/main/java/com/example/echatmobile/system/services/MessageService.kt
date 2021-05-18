@@ -48,10 +48,11 @@ class MessageService : Service() {
     }
 
     private fun handleMessageList() {
-        val notifiedMessages = echatModel.getReadMessagesLocal()
         try {
+            val notifiedMessages = echatModel.getReadMessagesLocal()
             echatModel.getNotReadMessages()
-                .filter { it.chat.id != filteredChatId && !notifiedMessages.contains(it) }.let {
+                .filter { message -> message.chat.id != filteredChatId && notifiedMessages.find { it.id == message.id } == null }
+                .let {
                     setMessagesRead(it)
                     GlobalScope.launch(Dispatchers.Main) { showMassages(it) }
                 }
@@ -87,7 +88,7 @@ class MessageService : Service() {
                     })
                     .setGraph(R.navigation.navigation)
                     .createPendingIntent()
-            ).let { NotificationManagerCompat.from(this).notify(counter++, it.build()) }
+            ).let { NotificationManagerCompat.from(this).notify(messageDTO.id.toInt(), it.build()) }
 
     fun setFilteredChatId(id: Long) {
         filteredChatId = id
