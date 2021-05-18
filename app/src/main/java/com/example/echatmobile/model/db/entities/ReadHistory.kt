@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class ReadHistory(
-    @PrimaryKey val id: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long,
     val messageId: Long,
     val status: String
 ) {

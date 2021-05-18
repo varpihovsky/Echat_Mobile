@@ -4,8 +4,6 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.echatmobile.di.DaggerEchatViewModelComponent
-import com.example.echatmobile.di.modules.EchatModelModule
-import com.example.echatmobile.di.modules.EchatViewModelFactoryModule
 import com.example.echatmobile.di.modules.EchatViewModelModule
 import com.example.echatmobile.system.EchatApplication
 import javax.inject.Inject

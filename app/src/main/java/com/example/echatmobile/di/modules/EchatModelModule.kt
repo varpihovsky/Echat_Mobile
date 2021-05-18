@@ -64,7 +64,8 @@ class EchatModelModule {
     @ModelScope
     @Provides
     fun getEchatRoomDatabase(context: Context) =
-        Room.databaseBuilder(context, EchatRoomDatabase::class.java, "echat_database").build()
+        Room.databaseBuilder(context, EchatRoomDatabase::class.java, "echat_database")
+            .build()
 
     @ModelScope
     @Provides

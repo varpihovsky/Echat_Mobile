@@ -22,7 +22,7 @@ interface RoomDAO {
     @Query("SELECT * FROM Chat WHERE id = :chatId")
     fun getChatById(chatId: Long): Chat?
 
-    @Query("SELECT * FROM Chat WHERE id = (SELECT chatId FROM ChatParticipantsCrossRef WHERE userId = :userId)")
+    @Query("SELECT * FROM Chat WHERE id IN (SELECT chatId FROM ChatParticipantsCrossRef WHERE userId = :userId)")
     fun getChatsByUserId(userId: Long): List<Chat>
 
     /* Invite */
@@ -68,10 +68,10 @@ interface RoomDAO {
     @Query("SELECT * FROM Message WHERE chatId = :chatId")
     fun getCompoundMessagesByChat(chatId: Long): List<MessageAndMessageAndChatAndUser>
 
-    @Query("SELECT * FROM Message WHERE id = (SELECT chatId FROM ReadHistory WHERE status = '${ReadHistory.NOT_READ}')")
+    @Query("SELECT * FROM Message WHERE id IN (SELECT chatId FROM ReadHistory WHERE status = '${ReadHistory.NOT_READ}')")
     fun getNotReadMessages(): List<Message>
 
-    @Query("SELECT * FROM Message WHERE id = (SELECT chatId FROM ReadHistory WHERE status = '${ReadHistory.READ}')")
+    @Query("SELECT * FROM Message WHERE id IN (SELECT messageId FROM ReadHistory WHERE status = '${ReadHistory.READ}')")
     fun getReadMessages(): List<Message>
 
     /* User */
@@ -91,10 +91,10 @@ interface RoomDAO {
     @Query("SELECT * FROM User WHERE id = :userId")
     fun getUserById(userId: Long): User?
 
-    @Query("SELECT * FROM User WHERE id = (SELECT userId FROM ChatParticipantsCrossRef WHERE chatId = :chatId)")
+    @Query("SELECT * FROM User WHERE id IN (SELECT userId FROM ChatParticipantsCrossRef WHERE chatId = :chatId)")
     fun getParticipantsByChatId(chatId: Long): List<User>
 
-    @Query("SELECT * FROM User WHERE id = (SELECT userId FROM ChatAdminsCrossRef WHERE chatId = :chatId)")
+    @Query("SELECT * FROM User WHERE id IN (SELECT userId FROM ChatAdminsCrossRef WHERE chatId = :chatId)")
     fun getAdminsByChatId(chatId: Long): List<User>
 
     /* ChatAdminsCrossRef */
@@ -133,11 +133,11 @@ interface RoomDAO {
 
     /* ReadHistory */
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     fun insertReadHistory(readHistory: ReadHistory)
 
-    @Update
-    fun updateReadHistory(readHistory: ReadHistory)
+    @Query("UPDATE ReadHistory SET status = '${ReadHistory.READ}' WHERE id = :id")
+    fun setMessageRead(id: Long)
 
     @Delete
     fun deleteReadHistory(readHistory: ReadHistory)

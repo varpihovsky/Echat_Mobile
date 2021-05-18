@@ -5,7 +5,6 @@ import com.example.echatmobile.model.entities.*
 import com.example.echatmobile.model.remote.EchatRemote
 import com.example.echatmobile.model.util.ConnectionListener
 import com.example.echatmobile.system.alsoHandleUnblocking
-import com.example.echatmobile.system.handleUnblocking
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -44,7 +43,7 @@ class EchatModel @Inject constructor(
     }
 
     fun authorize(login: String, password: String) {
-        val authorization = echatRemote.getAuthorization(login, password)?.handleUnblocking {
+        val authorization = echatRemote.getAuthorization(login, password)?.let {
             authorizationSaver.saveAuthorization(it)
             authorizationSaver.saveLoginAndPassword(login, password)
             echatRemote.setAuthorization(it)
@@ -58,6 +57,8 @@ class EchatModel @Inject constructor(
 
     fun getCurrentUserProfile(): UserWithoutPassword? =
         try {
+            checkAuthorization()
+
             echatRemote.getUserProfileByAuthorizationKey(authorizationKey)?.alsoHandleUnblocking {
                 saveCurrentUser(it)
             }?.let { UserWithoutPassword(it.id, it.login) }
@@ -141,8 +142,8 @@ class EchatModel @Inject constructor(
         echatDatabase.getReadMessages()
 
     fun getNotReadMessages(): List<MessageDTO> {
-        return echatRemote.getNotReadMessages().alsoHandleUnblocking {
-            it.forEach { message -> echatDatabase.addMessage(message) }
+        return echatRemote.getNotReadMessages().toHashSet().toList().onEach { message ->
+            echatDatabase.addMessage(message)
         }
     }
 
@@ -175,12 +176,23 @@ class EchatModel @Inject constructor(
         }
     }
 
+    private fun checkAuthorization() {
+        if (echatRemote.isAuthorizationNull()) {
+            authorizationSaver.getLoginAndPassword().let {
+                authorize(it.first, it.second)
+            }
+        }
+    }
+
     private fun isUserIdEqualsToCurrentUser(id: Long) = id == authorizationSaver.getCurrentUserId()
     override fun onConnectionChange(state: Boolean) {
         if (state) {
             GlobalScope.launch(Dispatchers.IO) {
-                authorizationSaver.getLoginAndPassword().alsoHandleUnblocking {
-                    authorize(it.first, it.second)
+                try {
+                    authorizationSaver.getLoginAndPassword().alsoHandleUnblocking {
+                        authorize(it.first, it.second)
+                    }
+                } catch (e: Exception) {
                 }
             }
         }

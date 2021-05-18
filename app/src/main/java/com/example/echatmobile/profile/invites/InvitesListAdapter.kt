@@ -25,7 +25,7 @@ class InvitesListAdapter(
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.binding?.inviteItemChatName?.text = dataList[position].chatDTO.name
+        holder.binding?.inviteItemChatName?.text = dataList[position].chat.name
 
         holder.binding?.inviteItemAcceptButton?.setOnClickListener {
             invitesAdapterCallbacks.onAcceptClick(dataList[holder.adapterPosition])

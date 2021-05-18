@@ -19,6 +19,8 @@ class EchatRemote @Inject constructor(
         this.authorizationKey = authorization
     }
 
+    fun isAuthorizationNull() = !this::authorizationKey.isInitialized
+
     fun getAuthorization(login: String, password: String): Authorization? {
         checkInternetConnection()
         val response = echatRestAPI.getAuthorizationKey(login, password).execute()
@@ -133,7 +135,17 @@ class EchatRemote @Inject constructor(
     }
 
     fun invite(chatId: Long, userId: Long) {
-        executeCallAndCheckForErrors { echatRestAPI.invite(authorizationKey.key, chatId, userId) }
+        try {
+            executeCallAndCheckForErrors {
+                echatRestAPI.invite(
+                    authorizationKey.key,
+                    chatId,
+                    userId
+                )
+            }
+        } catch (e: RuntimeException) {
+            throw RuntimeException("Only admins can invite new users to the chat")
+        }
     }
 
     fun acceptInvite(inviteId: Long) {
@@ -167,6 +179,9 @@ class EchatRemote @Inject constructor(
         if (response?.isSuccessful == false) {
             if (response.code() == 403) {
                 throw UnauthorizedException("Authorization invalidated (probably somebody logged in to your account)")
+            }
+            if (response.code() == 406) {
+                throw RuntimeException("Action is not acceptable")
             }
             throw RuntimeException(response.code().toString())
         }

@@ -41,9 +41,11 @@ class InviteViewModel @Inject constructor(
     }
 
     fun onInviteButtonClick(user: UserWithoutPassword) {
-        GlobalScope.launch(Dispatchers.IO) {
-            echatModel.invite(chatId, user.id)
-            removeFromList(user)
-        }
+        GlobalScope.launch(Dispatchers.IO) { handleIO { handleInvite(user) } }
+    }
+
+    private fun handleInvite(user: UserWithoutPassword) {
+        echatModel.invite(chatId, user.id)
+        removeFromList(user)
     }
 }

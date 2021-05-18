@@ -5,7 +5,7 @@ import com.example.echatmobile.model.db.entities.Invite
 data class InviteDTO(
     val id: Long,
     val account: UserWithoutPassword,
-    val chatDTO: ChatDTO
+    val chat: ChatDTO
 ) {
-    fun toDBObj() = Invite(id, chatDTO.id)
+    fun toDBObj() = Invite(id, chat.id)
 }

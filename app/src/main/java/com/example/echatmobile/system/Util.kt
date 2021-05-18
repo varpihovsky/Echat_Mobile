@@ -4,11 +4,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-fun <T> T.handleUnblocking(block: (T) -> Unit) {
-    GlobalScope.launch(Dispatchers.IO) { block(this@handleUnblocking) }
+fun <T> T.letHandleUnblocking(block: (T) -> Unit) {
+    GlobalScope.launch(Dispatchers.IO) { block(this@letHandleUnblocking) }
 }
 
-fun <T> handleUnblocking(block: () -> Unit) {
+fun <T> T.handleUnblocking(block: () -> Unit) {
     GlobalScope.launch(Dispatchers.IO) { block() }
 }
 

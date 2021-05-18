@@ -14,7 +14,7 @@ import com.example.echatmobile.model.db.entities.*
         ReadHistory::class,
         User::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class EchatRoomDatabase : RoomDatabase() {

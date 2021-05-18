@@ -37,8 +37,11 @@ class EchatDatabase(private val roomDAO: RoomDAO) {
     }
 
     fun setMessageRead(messageId: Long) {
-        roomDAO.getReadHistoryByMessageId(messageId)?.let {
-            roomDAO.updateReadHistory(ReadHistory(it.id, it.messageId, READ))
+        val readHistory = roomDAO.getReadHistoryByMessageId(messageId)
+        if (readHistory != null) {
+            roomDAO.setMessageRead(readHistory.id)
+        } else {
+            this.addReadHistory(ReadHistory(0, messageId, READ))
         }
     }
 
@@ -56,6 +59,9 @@ class EchatDatabase(private val roomDAO: RoomDAO) {
     }
 
     private fun addReadHistory(messageDTO: MessageDTO) {
+        if (roomDAO.getReadHistoryByMessageId(messageDTO.id) != null) {
+            return
+        }
         roomDAO.insertReadHistory(ReadHistory(0, messageDTO.id, NOT_READ))
     }
 
