@@ -17,7 +17,7 @@ interface EchatRestAPI {
     fun register(
         @Query("login") login: String,
         @Query("password") password: String
-    ): Call<Any>
+    ): Call<Unit>
 
     @GET("profile/get/by-key")
     fun getProfileByKey(@Query("key") key: String): Call<UserDTO>
@@ -70,20 +70,20 @@ interface EchatRestAPI {
         @Query("chat-id") chatId: Long,
         @Query("text") text: String,
         @Query(value = "to-message-id") toMessageId: Long
-    ): Call<Any>
+    ): Call<Unit>
 
     @POST("message/write")
     fun writeMessage(
         @Query("key") key: String,
         @Query("chat-id") chatId: Long,
         @Query("text") text: String
-    ): Call<Any>
+    ): Call<Unit>
 
     @POST("message/read")
     fun setMessageRead(
         @Query("key") key: String,
         @Query("id") messageId: Long
-    ): Call<Any>
+    ): Call<Unit>
 
     @GET("message/not-read")
     fun getNotReadMessages(@Query("key") key: String): Call<ResponseList<MessageDTO>>
@@ -96,17 +96,17 @@ interface EchatRestAPI {
         @Query("key") key: String,
         @Query("chat-id") chatId: Long,
         @Query("id") userId: Long
-    ): Call<Any>
+    ): Call<Unit>
 
     @POST("invite/accept")
     fun acceptInvite(
         @Query("key") key: String,
         @Query("id") invitationId: Long
-    ): Call<Any>
+    ): Call<Unit>
 
     @POST("invite/decline")
     fun declineInvite(
         @Query("key") key: String,
         @Query("id") invitationId: Long
-    ): Call<Any>
+    ): Call<Unit>
 }
