@@ -55,6 +55,17 @@ class EchatAuthorizationSaver(private val context: Context) {
         }
     }
 
+    fun getCurrentUserId() = preferences.getLong(USER_ID_LONG, -1).also {
+        if (it == -1L) throwWasNotSavedException()
+    }
+
+    fun saveCurrentUserId(id: Long) {
+        with(preferences.edit()) {
+            putLong(USER_ID_LONG, id)
+            apply()
+        }
+    }
+
     private fun throwWasNotSavedException(): Nothing {
         throw RuntimeException("Values was not saved")
     }
@@ -68,5 +79,7 @@ class EchatAuthorizationSaver(private val context: Context) {
 
         private const val LOGIN_STRING = "login"
         private const val PASSWORD_STRING = "password"
+
+        private const val USER_ID_LONG = "user_id"
     }
 }

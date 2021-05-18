@@ -10,6 +10,8 @@ import com.example.echatmobile.databinding.ProfileFragmentBinding
 import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
+import com.example.echatmobile.system.components.events.HideUnnecessaryDataEvent
+import com.example.echatmobile.system.components.events.NavigateEvent
 
 class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>() {
     private lateinit var navController: NavController
@@ -44,7 +46,6 @@ class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>()
         super.onViewCreated(view, savedInstanceState)
 
         initBinding()
-        getProfileIdData()
         initNavController()
     }
 
@@ -53,14 +54,19 @@ class ProfileFragment : BaseFragment<ProfileViewModel, ProfileFragmentBinding>()
         binding.lifecycleOwner = viewLifecycleOwner
     }
 
-    private fun getProfileIdData() {
-        val profileId = arguments?.getLong(PROFILE_ID_KEY)
-        viewModel.loadProfileData(profileId)
-    }
-
     private fun initNavController() {
         navController =
             (childFragmentManager.findFragmentById(R.id.profile_result_fragment) as NavHostFragment).navController
+    }
+
+    override fun onStart() {
+        super.onStart()
+        getProfileIdData()
+    }
+
+    private fun getProfileIdData() {
+        val profileId = arguments?.getLong(PROFILE_ID_KEY)
+        viewModel.loadProfileData(profileId)
     }
 
     fun getViewModel() = viewModel

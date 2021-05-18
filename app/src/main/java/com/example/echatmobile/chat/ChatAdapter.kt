@@ -12,7 +12,7 @@ import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ChatItemBinding
 
 class ChatAdapter(
-    private val dataList: List<MessageDTO>,
+    private val dataList: List<MessageViewModelDTO>,
     private val onBindViewHolderCallback: (ViewHolder, Int) -> Unit
 ) :
     RecyclerView.Adapter<ChatAdapter.ViewHolder>() {

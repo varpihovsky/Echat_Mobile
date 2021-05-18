@@ -7,18 +7,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ProfileRoomsFragmentBinding
 import com.example.echatmobile.di.EchatViewModelFactoryComponent
-import com.example.echatmobile.model.entities.Chat
-import com.example.echatmobile.new_chat.RemoveDataListItemEvent
+import com.example.echatmobile.model.entities.ChatDTO
 import com.example.echatmobile.profile.ItemClickObject
 import com.example.echatmobile.profile.ProfileFragment
 import com.example.echatmobile.profile.RoomListAdapter
-import com.example.echatmobile.system.BaseEventTypeInterface
-import com.example.echatmobile.system.BaseFragment
+import com.example.echatmobile.system.components.ui.ListableFragment
 
-class ProfileRoomsFragment : BaseFragment<ProfileRoomsViewModel, ProfileRoomsFragmentBinding>(),
+class ProfileRoomsFragment :
+    ListableFragment<ProfileRoomsViewModel, ProfileRoomsFragmentBinding, ChatDTO>(),
     ItemClickObject {
-    private val dataList = mutableListOf<Chat>()
-    private var listenToDataListEvents = true
     private lateinit var profileFragment: ProfileFragment
 
     override fun viewModel(): Class<ProfileRoomsViewModel> = ProfileRoomsViewModel::class.java
@@ -28,16 +25,12 @@ class ProfileRoomsFragment : BaseFragment<ProfileRoomsViewModel, ProfileRoomsFra
 
     override fun layoutId(): Int = R.layout.profile_rooms_fragment
 
-    override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
-        when (baseEvent) {
-            is RemoveDataListItemEvent -> removeDataListItem(baseEvent.position)
-        }
+    override fun onListReplacedCallback() {
+        binding.profileRoomList.adapter?.notifyDataSetChanged()
     }
 
-    private fun removeDataListItem(index: Int) {
-        dataList.removeAt(index)
+    override fun onListUpdatedCallback(updateType: String, index: Int) {
         binding.profileRoomList.adapter?.notifyItemRemoved(index)
-        listenToDataListEvents = false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,12 +41,23 @@ class ProfileRoomsFragment : BaseFragment<ProfileRoomsViewModel, ProfileRoomsFra
 
             profileFragment.getViewModel().addOnUserLoadCallback {
                 initRecyclerView()
-                initObservers()
 
                 viewModel.onFragmentCreated(it)
             }
         }
     }
+
+//    override fun onStart() {
+//        super.onStart()
+//
+//        profileFragment = parentFragment?.parentFragment as ProfileFragment
+//
+//        profileFragment.getViewModel().addOnUserLoadCallback {
+//            initRecyclerView()
+//
+//            viewModel.onFragmentCreated(it)
+//        }
+//    }
 
     private fun initRecyclerView() {
         binding.profileRoomList.layoutManager = LinearLayoutManager(context)
@@ -65,28 +69,15 @@ class ProfileRoomsFragment : BaseFragment<ProfileRoomsViewModel, ProfileRoomsFra
         }
     }
 
-    private fun initObservers() {
-        viewModel.data.dataList.observe(viewLifecycleOwner) { loadList(it) }
+    override fun onItemClick(chatDTO: ChatDTO) {
+        viewModel.onItemClick(chatDTO)
     }
 
-    private fun loadList(list: List<Chat>) {
-        if (listenToDataListEvents) {
-            dataList.clear()
-            dataList.addAll(list)
-            binding.profileRoomList.adapter?.notifyDataSetChanged()
-        }
-        listenToDataListEvents = true
+    override fun onItemRemoveClick(chatDTO: ChatDTO) {
+        viewModel.onItemRemoveClick(chatDTO)
     }
 
-    override fun onItemClick(chat: Chat) {
-        viewModel.onItemClick(chat)
-    }
-
-    override fun onItemRemoveClick(chat: Chat) {
-        viewModel.onItemRemoveClick(chat)
-    }
-
-    override fun onInviteClick(chat: Chat) {
-        viewModel.onInviteClick(chat)
+    override fun onInviteClick(chatDTO: ChatDTO) {
+        viewModel.onInviteClick(chatDTO)
     }
 }

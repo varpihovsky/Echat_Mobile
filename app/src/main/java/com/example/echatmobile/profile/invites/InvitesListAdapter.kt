@@ -7,10 +7,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.InviteItemBinding
-import com.example.echatmobile.model.entities.Invite
+import com.example.echatmobile.model.entities.InviteDTO
 
 class InvitesListAdapter(
-    private val dataList: List<Invite>,
+    private val dataList: List<InviteDTO>,
     private val invitesAdapterCallbacks: InvitesAdapterCallbacks
 ) : RecyclerView.Adapter<InvitesListAdapter.ViewHolder>() {
 
@@ -38,8 +38,8 @@ class InvitesListAdapter(
     override fun getItemCount(): Int = dataList.size
 
     interface InvitesAdapterCallbacks {
-        fun onAcceptClick(invite: Invite)
+        fun onAcceptClick(inviteDTO: InviteDTO)
 
-        fun onDeclineClick(invite: Invite)
+        fun onDeclineClick(inviteDTO: InviteDTO)
     }
 }

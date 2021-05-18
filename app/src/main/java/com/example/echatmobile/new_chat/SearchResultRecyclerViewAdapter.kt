@@ -7,7 +7,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.JoinChatItemBinding
-import com.example.echatmobile.model.entities.Chat
+import com.example.echatmobile.model.entities.ChatDTO
 import com.example.echatmobile.model.entities.UserWithoutPassword
 
 class SearchResultRecyclerViewAdapter(
@@ -21,16 +21,16 @@ class SearchResultRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: SearchResultViewHolder, position: Int) {
         when (dataList[position]) {
-            is Chat -> processChat(holder, dataList[position] as Chat)
+            is ChatDTO -> processChat(holder, dataList[position] as ChatDTO)
             is UserWithoutPassword -> processUser(holder, dataList[position] as UserWithoutPassword)
         }
     }
 
-    private fun processChat(holder: SearchResultViewHolder, chat: Chat) {
-        holder.binding?.joinChatItemTitle?.text = chat.name
+    private fun processChat(holder: SearchResultViewHolder, chatDTO: ChatDTO) {
+        holder.binding?.joinChatItemTitle?.text = chatDTO.name
         holder.binding?.joinChatItemButton?.apply {
             setText(R.string.search_result_chat_button_text)
-            setOnClickListener { searchResultButtonClickListener.onChatButtonClick(dataList[holder.adapterPosition] as Chat) }
+            setOnClickListener { searchResultButtonClickListener.onChatButtonClick(dataList[holder.adapterPosition] as ChatDTO) }
         }
     }
 
@@ -49,7 +49,7 @@ class SearchResultRecyclerViewAdapter(
     }
 
     interface SearchResultButtonClickListener {
-        fun onChatButtonClick(chat: Chat)
+        fun onChatButtonClick(chatDTO: ChatDTO)
 
         fun onUserButtonClick(user: UserWithoutPassword)
     }

@@ -1,30 +1,37 @@
 package com.example.echatmobile.model
 
-import android.content.Context
-import android.util.Log
-import com.example.echatmobile.api.EchatRestAPI
+import com.example.echatmobile.model.db.EchatDatabase
 import com.example.echatmobile.model.entities.*
-import com.example.echatmobile.system.ConnectionManager
-import retrofit2.Call
-import retrofit2.Response
+import com.example.echatmobile.model.remote.EchatRemote
+import com.example.echatmobile.model.util.ConnectionListener
+import com.example.echatmobile.system.alsoHandleUnblocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
+class EchatModel @Inject constructor(
+    private val echatRemote: EchatRemote,
+    private val echatDatabase: EchatDatabase,
+    private val authorizationSaver: EchatAuthorizationSaver
+) : ConnectionListener.ConnectionCallbacks {
     val currentUserLogin: String
         get() = authorizationSaver.getLoginAndPassword().first
 
     private val authorizationKey: Authorization
         get() = authorizationSaver.getAuthorization()
 
-    @Inject
-    lateinit var context: Context
-
-    private val authorizationSaver by lazy { EchatAuthorizationSaver(context) }
+    init {
+        ConnectionListener(this)
+    }
 
     fun isLoginPresent(): Boolean =
         try {
             authorizationSaver.getLoginAndPassword().let {
-                authorize(it.first, it.second)
+                try {
+                    authorize(it.first, it.second)
+                } catch (e: NoInternetConnectionException) {
+                }
             }
             true
         } catch (e: Exception) {
@@ -36,192 +43,158 @@ class EchatModel @Inject constructor(private val echatRestAPI: EchatRestAPI) {
     }
 
     fun authorize(login: String, password: String) {
-        checkInternetConnection()
-        val response = echatRestAPI.getAuthorizationKey(login, password).execute()
-        if (!response.isSuccessful) {
-            throw WrongLoginOrPasswordException("Wrong login or password")
-        }
-
-        response.body()?.let {
-            Log.d(DEBUG_PREFIX, "Authorization key: $it")
-            saveAuthorizationData(it)
+        val authorization = echatRemote.getAuthorization(login, password)?.let {
+            authorizationSaver.saveAuthorization(it)
             authorizationSaver.saveLoginAndPassword(login, password)
+            echatRemote.setAuthorization(it)
         }
+        isWrong(authorization, "Wrong login or password")
     }
 
     fun register(login: String, password: String) {
-        checkInternetConnection()
-
-        val response = echatRestAPI.register(login, password).execute()
-        if (!response.isSuccessful) {
-            throw IllegalArgumentException("User with this login exists or password length is less than 8")
-        }
+        echatRemote.register(login, password)
     }
 
-    fun getCurrentUserProfile(): User? {
-        val response =
-            executeCallAndCheckForErrors { echatRestAPI.getProfileByKey(authorizationKey.key) }
-        return response?.body()
+    fun getCurrentUserProfile(): UserWithoutPassword? =
+        try {
+            checkAuthorization()
+
+            echatRemote.getUserProfileByAuthorizationKey(authorizationKey)?.alsoHandleUnblocking {
+                saveCurrentUser(it)
+            }?.let { UserWithoutPassword(it.id, it.login) }
+        } catch (e: NoInternetConnectionException) {
+            try {
+                echatDatabase.getUserById(authorizationSaver.getCurrentUserId())
+            } catch (e: Exception) {
+                throw e
+            }
+        }
+
+    private fun saveCurrentUser(userDTO: UserDTO) {
+        authorizationSaver.saveCurrentUserId(userDTO.id)
+        echatDatabase.addUser(userDTO)
     }
 
     fun getUserProfileById(id: Long): UserWithoutPassword? {
-        val response =
-            executeCallAndCheckForErrors { echatRestAPI.getProfileById(authorizationKey.key, id) }
-        return response?.body()
+        return echatRemote.getUserProfileById(id)
     }
 
     fun getUserProfileByQuery(query: String): List<UserWithoutPassword> {
-        val currentUser = getCurrentUserProfile()?.let { UserWithoutPassword(it.id, it.login) }
-        val response = executeCallAndCheckForErrors {
-            echatRestAPI.getProfilesByQuery(authorizationKey.key, query)
-        }
-        return response?.body()?.response?.filter { it != currentUser } ?: emptyList()
+        return echatRemote.getUserProfileByQuery(query).filter { it != getCurrentUserProfile() }
     }
 
-    fun getChatsByParticipantId(id: Long): List<Chat> {
-        val response = executeCallAndCheckForErrors {
-            echatRestAPI.getChatsByParticipantId(
-                authorizationKey.key,
-                id
-            )
+    fun getChatsByParticipantId(id: Long): List<ChatDTO> =
+        try {
+            echatRemote.getChatsByParticipantId(id).alsoHandleUnblocking {
+                if (isUserIdEqualsToCurrentUser(id)) {
+                    it.forEach { chatDTO -> echatDatabase.addChat(chatDTO) }
+                }
+            }
+        } catch (e: NoInternetConnectionException) {
+            if (isUserIdEqualsToCurrentUser(id)) {
+                echatDatabase.getChatsByUserId(id)
+            } else {
+                throw RuntimeException()
+            }
         }
-        return response?.body()?.response ?: emptyList()
+
+    fun getChatsByQuery(query: String): List<ChatDTO> {
+        return echatRemote.getChatsByQuery(query)
     }
 
-    fun getChatsByQuery(query: String): List<Chat> {
-        val response = executeCallAndCheckForErrors(2) {
-            echatRestAPI.getChatsByQuery(authorizationKey.key, query)
+    fun createChat(name: String): ChatDTO? {
+        return echatRemote.createChat(name)?.alsoHandleUnblocking {
+            echatDatabase.addChat(it)
         }
-        return response?.body()?.response ?: emptyList()
-    }
-
-    fun createChat(name: String): Chat? {
-        val response =
-            executeCallAndCheckForErrors(1) { echatRestAPI.createChat(authorizationKey.key, name) }
-        return response?.body()
     }
 
     fun joinToChat(chatId: Long) {
-        executeCallAndCheckForErrors { echatRestAPI.joinToChat(authorizationKey.key, chatId) }
+        echatRemote.joinToChat(chatId)?.let {
+            echatDatabase.addChat(it)
+        }
     }
 
-    fun getMessageHistory(chatId: Long): List<Message> {
-        val response = executeCallAndCheckForErrors {
-            echatRestAPI.getMessageHistory(
-                authorizationKey.key,
-                chatId
-            )
+    fun getMessageHistory(chatId: Long): List<MessageDTO> =
+        try {
+            echatRemote.getMessageHistory(chatId).alsoHandleUnblocking {
+                it.forEach { messageDTO -> echatDatabase.addMessage(messageDTO) }
+            }
+        } catch (e: NoInternetConnectionException) {
+            echatDatabase.getMessagesByChat(chatId)
+        } catch (e: NullPointerException) {
+            echatDatabase.getMessagesByChat(chatId)
         }
-        return response?.body()?.response ?: emptyList()
-    }
 
     fun writeMessage(chatId: Long, text: String, toMessageId: Long? = null) {
-        if (toMessageId == null) {
-            executeCallAndCheckForErrors(1) {
-                echatRestAPI.writeMessage(authorizationKey.key, chatId, text)
-            }
-        } else {
-            executeCallAndCheckForErrors(1) {
-                echatRestAPI.writeMessage(authorizationKey.key, chatId, text, toMessageId)
-            }
-        }
+        echatRemote.writeMessage(chatId, text, toMessageId)
     }
 
     fun setMessageRead(messageId: Long) {
-        executeCallAndCheckForErrors {
-            echatRestAPI.setMessageRead(
-                authorizationKey.key,
-                messageId
-            )
+        echatRemote.setMessageRead(messageId)
+        echatDatabase.setMessageRead(messageId)
+    }
+
+    fun setMessageReadLocal(messageId: Long) {
+        echatDatabase.setMessageRead(messageId)
+    }
+
+    fun getReadMessagesLocal(): List<MessageDTO> =
+        echatDatabase.getReadMessages()
+
+    fun getNotReadMessages(): List<MessageDTO> {
+        return echatRemote.getNotReadMessages().toHashSet().toList().onEach { message ->
+            echatDatabase.addMessage(message)
         }
     }
 
-    fun getNotReadMessages(): List<Message> {
-        val response = executeCallAndCheckForErrors {
-            echatRestAPI.getNotReadMessages(authorizationKey.key)
-        }
-        return response?.body()?.response ?: emptyList()
+    fun getCurrentUserChatList() = getCurrentUserProfile()?.id?.let {
+        getChatsByParticipantId(it)
     }
 
-    fun getCurrentUserChatList() = getCurrentUserProfile()?.id?.let { getChatsByParticipantId(it) }
-
-    fun getCurrentUserInvites(): List<Invite> {
-        val response =
-            executeCallAndCheckForErrors {
-                echatRestAPI.getInvites(authorizationKey.key)
-            }
-        return response?.body()?.response ?: emptyList()
+    fun getCurrentUserInvites(): List<InviteDTO> {
+        return echatRemote.getCurrentUserInvites()
+            .onEach { inviteDTO -> echatDatabase.addInvite(inviteDTO) }
     }
 
     fun invite(chatId: Long, userId: Long) {
-        executeCallAndCheckForErrors {
-            echatRestAPI.invite(authorizationKey.key, chatId, userId)
-        }
+        echatRemote.invite(chatId, userId)
     }
 
     fun acceptInvite(inviteId: Long) {
-        executeCallAndCheckForErrors {
-            echatRestAPI.acceptInvite(authorizationKey.key, inviteId)
-        }
+        echatRemote.acceptInvite(inviteId)
+        echatDatabase.removeInviteById(inviteId)
     }
 
     fun declineInvite(inviteId: Long) {
-        executeCallAndCheckForErrors {
-            echatRestAPI.declineInvite(authorizationKey.key, inviteId)
+        echatRemote.declineInvite(inviteId)
+        echatDatabase.removeInviteById(inviteId)
+    }
+
+    private fun isWrong(any: Any?, errorText: String = "Something went wrong") {
+        if (any == null) {
+            throw RuntimeException(errorText)
         }
     }
 
-    private fun <T> executeCallAndCheckForErrors(
-        repeatCount: Int = 2,
-        block: () -> Call<T>
-    ): Response<T>? {
-        var response: Response<T>? = null
-
-        repeat(repeatCount) {
-            try {
-                checkInternetConnection()
-                response = block.invoke().execute()
-                return@repeat
-            } catch (e: Exception) {
-                Log.d(DEBUG_PREFIX, e.message, e)
-                reauthorize(response)
-
-                if (it == repeatCount) {
-                    throw e
-                }
-            }
-            checkError(response)
-        }
-        return response
-    }
-
-    private fun checkInternetConnection() {
-        if (!ConnectionManager().isConnected()) {
-            throw NoInternetConnectionException("Please connect to the Internet")
-        }
-    }
-
-    private fun <T> checkError(response: Response<T>?) {
-        if (response?.isSuccessful == false) {
-            throw RuntimeException(response.errorBody()?.string() + "\n" + response.message())
-        }
-    }
-
-    private fun <T> reauthorize(response: Response<T>?) {
-        if (response?.code() == FORBIDDEN) {
+    private fun checkAuthorization() {
+        if (echatRemote.isAuthorizationNull()) {
             authorizationSaver.getLoginAndPassword().let {
                 authorize(it.first, it.second)
             }
         }
     }
 
-
-    private fun saveAuthorizationData(authorization: Authorization) {
-        authorizationSaver.saveAuthorization(authorization)
-    }
-
-    companion object {
-        private const val DEBUG_PREFIX = "Application/Model"
-        private const val FORBIDDEN = 403
+    private fun isUserIdEqualsToCurrentUser(id: Long) = id == authorizationSaver.getCurrentUserId()
+    override fun onConnectionChange(state: Boolean) {
+        if (state) {
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    authorizationSaver.getLoginAndPassword().alsoHandleUnblocking {
+                        authorize(it.first, it.second)
+                    }
+                } catch (e: Exception) {
+                }
+            }
+        }
     }
 }

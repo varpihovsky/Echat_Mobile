@@ -7,16 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ProfileInvitesFragmentBinding
 import com.example.echatmobile.di.EchatViewModelFactoryComponent
-import com.example.echatmobile.model.entities.Invite
-import com.example.echatmobile.new_chat.RemoveDataListItemEvent
-import com.example.echatmobile.system.BaseEventTypeInterface
-import com.example.echatmobile.system.BaseFragment
+import com.example.echatmobile.model.entities.InviteDTO
+import com.example.echatmobile.system.components.ui.ListableFragment
 
 class ProfileInvitesFragment :
-    BaseFragment<ProfileInvitesViewModel, ProfileInvitesFragmentBinding>(),
+    ListableFragment<ProfileInvitesViewModel, ProfileInvitesFragmentBinding, InviteDTO>(),
     InvitesListAdapter.InvitesAdapterCallbacks {
-    private val dataList = mutableListOf<Invite>()
-    private var listenToDataListEvents = true
 
     override fun viewModel(): Class<ProfileInvitesViewModel> = ProfileInvitesViewModel::class.java
 
@@ -25,24 +21,18 @@ class ProfileInvitesFragment :
 
     override fun layoutId(): Int = R.layout.profile_invites_fragment
 
-    override fun handleExtendedObservers(baseEvent: BaseEventTypeInterface) {
-        when (baseEvent) {
-            is RemoveDataListItemEvent -> removeItem(baseEvent.position)
-        }
+    override fun onListReplacedCallback() {
+        binding.profileRoomList.adapter?.notifyDataSetChanged()
     }
 
-    private fun removeItem(index: Int) {
-        dataList.removeAt(index)
+    override fun onListUpdatedCallback(updateType: String, index: Int) {
         binding.profileRoomList.adapter?.notifyItemRemoved(index)
-        listenToDataListEvents = false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initRecyclerView()
-        initObservers()
-
         viewModel.onFragmentCreated()
     }
 
@@ -51,24 +41,11 @@ class ProfileInvitesFragment :
         binding.profileRoomList.adapter = InvitesListAdapter(dataList, this)
     }
 
-    private fun initObservers() {
-        viewModel.data.dataList.observe(viewLifecycleOwner) { showInvites(it) }
+    override fun onAcceptClick(inviteDTO: InviteDTO) {
+        viewModel.onInviteAccept(inviteDTO)
     }
 
-    private fun showInvites(list: List<Invite>) {
-        if (listenToDataListEvents) {
-            dataList.clear()
-            dataList.addAll(list)
-            binding.profileRoomList.adapter?.notifyDataSetChanged()
-        }
-        listenToDataListEvents = true
-    }
-
-    override fun onAcceptClick(invite: Invite) {
-        viewModel.onInviteAccept(invite)
-    }
-
-    override fun onDeclineClick(invite: Invite) {
-        viewModel.onInviteDecline(invite)
+    override fun onDeclineClick(inviteDTO: InviteDTO) {
+        viewModel.onInviteDecline(inviteDTO)
     }
 }

@@ -1,7 +1,6 @@
 package com.example.echatmobile.system
 
 import android.app.Application
-import android.os.Debug
 import com.example.echatmobile.di.ApplicationComponent
 import com.example.echatmobile.di.DaggerApplicationComponent
 import com.example.echatmobile.di.DaggerEchatModelComponent
@@ -34,6 +33,7 @@ class EchatApplication : Application() {
         daggerEchatModelComponent =
             DaggerEchatModelComponent.builder()
                 .echatModelModule(EchatModelModule())
+                .applicationComponent(daggerApplicationComponent)
                 .build()
     }
 

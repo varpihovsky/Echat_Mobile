@@ -2,18 +2,12 @@ package com.example.echatmobile.profile.rooms
 
 import android.app.Application
 import android.os.Bundle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.example.echatmobile.R
 import com.example.echatmobile.chat.ChatFragment
 import com.example.echatmobile.invite.InviteFragment
 import com.example.echatmobile.model.EchatModel
-import com.example.echatmobile.model.entities.Chat
-import com.example.echatmobile.new_chat.RemoveDataListItemEvent
-import com.example.echatmobile.system.BaseEvent
-import com.example.echatmobile.system.BaseFragment.Companion.TOAST_SHORT
-import com.example.echatmobile.system.BaseViewModel
+import com.example.echatmobile.model.entities.ChatDTO
+import com.example.echatmobile.system.components.ListableViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -22,60 +16,56 @@ import javax.inject.Inject
 class ProfileRoomsViewModel @Inject constructor(
     application: Application,
     private val echatModel: EchatModel
-) : BaseViewModel(application) {
-    val data by lazy { Data() }
-    private val dataList = MutableLiveData<List<Chat>>()
-
-    inner class Data {
-        val dataList: LiveData<List<Chat>> = this@ProfileRoomsViewModel.dataList
-    }
+) : ListableViewModel<ChatDTO>(application) {
 
     fun onFragmentCreated(profileId: Long?) {
-        if (dataList.value == null && profileId == null) {
-            GlobalScope.launch(Dispatchers.IO) { initCurrentUserDataList() }
+        if (isListEmpty() && profileId == null) {
+            GlobalScope.launch(Dispatchers.IO) { handleIO { initCurrentUserDataList() } }
         }
-        if (dataList.value == null && profileId != null) {
-            GlobalScope.launch { initUserProfileList(profileId) }
+        if (isListEmpty() && profileId != null) {
+            GlobalScope.launch(Dispatchers.IO) { handleIO { initUserProfileList(profileId) } }
+        }
+        if (!isListEmpty()) {
+            GlobalScope.launch(Dispatchers.IO) { handleIO { updateList(profileId) } }
         }
     }
 
     private fun initCurrentUserDataList() {
-        try {
-            echatModel.getCurrentUserChatList()?.let {
-                viewModelScope.launch { dataList.value = it }
-            }
-        } catch (e: Exception) {
-            viewModelScope.launch { e.message?.let { makeToast(it, TOAST_SHORT) } }
-        }
+        echatModel.getCurrentUserChatList()?.let { addAllToList(it) }
     }
 
     private fun initUserProfileList(profileId: Long) {
-        try {
-            echatModel.getChatsByParticipantId(profileId).let {
-                viewModelScope.launch { dataList.value = it }
-            }
-        } catch (e: Exception) {
-            viewModelScope.launch { e.message?.let { makeToast(it, TOAST_SHORT) } }
+        addAllToList(echatModel.getChatsByParticipantId(profileId))
+    }
+
+    private fun updateList(profileId: Long?) {
+        if (profileId != null) {
+            echatModel.getChatsByParticipantId(profileId)
+                .filter { listableData.dataList.value?.contains(it) == false }.forEach {
+                    addToList(it)
+                }
+        } else {
+            echatModel.getCurrentUserChatList()
+                ?.filter { listableData.dataList.value?.contains(it) == false }?.forEach {
+                    addToList(it)
+                }
         }
     }
 
-    fun onItemClick(chat: Chat) {
+    fun onItemClick(chatDTO: ChatDTO) {
         navigate(
             R.id.action_profileFragment_to_chatFragment,
-            Bundle().apply { putLong(ChatFragment.CHAT_ID_ARGUMENT, chat.id) })
+            Bundle().apply { putLong(ChatFragment.CHAT_ID_ARGUMENT, chatDTO.id) })
     }
 
-    fun onItemRemoveClick(chat: Chat) {
+    fun onItemRemoveClick(chatDTO: ChatDTO) {
         // Chat leaving function is not implemented on server
-        dataList.value?.let {
-            baseEventLiveData.value = BaseEvent(RemoveDataListItemEvent(it.indexOf(chat)))
-            dataList.value = it.toMutableList().apply { remove(chat) }
-        }
+        removeFromList(chatDTO)
     }
 
-    fun onInviteClick(chat: Chat) {
+    fun onInviteClick(chatDTO: ChatDTO) {
         navigate(
             R.id.action_profileFragment_to_inviteFragment,
-            Bundle().apply { putLong(InviteFragment.CHAT_ID_PARAM, chat.id) })
+            Bundle().apply { putLong(InviteFragment.CHAT_ID_PARAM, chatDTO.id) })
     }
 }
