@@ -1,4 +1,4 @@
-package com.example.echatmobile.system.components
+package com.example.echatmobile.system.components.ui.architecture
 
 import android.widget.Button
 import androidx.databinding.ViewDataBinding

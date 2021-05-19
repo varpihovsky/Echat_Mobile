@@ -1,11 +1,10 @@
-package com.example.echatmobile.system.components.ui
+package com.example.echatmobile.system.components.ui.architecture
 
 import android.os.Bundle
 import android.view.View
 import androidx.databinding.ViewDataBinding
 import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.BaseFragment
-import com.example.echatmobile.system.components.ListableViewModel
 import com.example.echatmobile.system.components.events.UpdateListEvent
 import com.example.echatmobile.system.components.events.UpdateListEvent.Companion.ADD
 import com.example.echatmobile.system.components.events.UpdateListEvent.Companion.REMOVE

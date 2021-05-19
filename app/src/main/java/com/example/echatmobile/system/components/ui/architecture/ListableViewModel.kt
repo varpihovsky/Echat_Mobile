@@ -1,4 +1,4 @@
-package com.example.echatmobile.system.components
+package com.example.echatmobile.system.components.ui.architecture
 
 import android.app.Application
 import androidx.lifecycle.LiveData
