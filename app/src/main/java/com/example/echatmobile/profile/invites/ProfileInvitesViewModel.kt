@@ -3,7 +3,7 @@ package com.example.echatmobile.profile.invites
 import android.app.Application
 import com.example.echatmobile.model.EchatModel
 import com.example.echatmobile.model.entities.InviteDTO
-import com.example.echatmobile.system.components.ListableViewModel
+import com.example.echatmobile.system.components.ui.architecture.ListableViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

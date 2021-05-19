@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.example.echatmobile.model.EchatModel
 import com.example.echatmobile.system.BaseFragment.Companion.TOAST_SHORT
-import com.example.echatmobile.system.components.AuthorizationViewModel
+import com.example.echatmobile.system.components.ui.architecture.AuthorizationViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -15,10 +15,10 @@ class RegisterViewModel @Inject constructor(
     private val echatModel: EchatModel
 ) : AuthorizationViewModel(application) {
     fun onRegisterButtonClick(login: String, password: String) {
-        setAuthorizationButtonNotClickable()
+        changeButtonState()
         GlobalScope.launch(Dispatchers.IO) {
             handleIO { handleRegister(login, password) }
-            viewModelScope.launch { setAuthorizationButtonClickable() }
+            viewModelScope.launch { changeButtonState() }
         }
     }
 

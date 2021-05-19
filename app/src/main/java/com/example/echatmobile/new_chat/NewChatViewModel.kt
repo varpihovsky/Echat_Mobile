@@ -11,7 +11,7 @@ import com.example.echatmobile.model.entities.UserWithoutPassword
 import com.example.echatmobile.profile.ProfileFragment
 import com.example.echatmobile.system.BaseEvent
 import com.example.echatmobile.system.BaseFragment.Companion.TOAST_SHORT
-import com.example.echatmobile.system.components.ListableViewModel
+import com.example.echatmobile.system.components.ui.architecture.ListableViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

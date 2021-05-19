@@ -8,7 +8,7 @@ import com.example.echatmobile.R
 import com.example.echatmobile.databinding.InviteFragmentBinding
 import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.model.entities.UserWithoutPassword
-import com.example.echatmobile.system.components.ui.ListableFragment
+import com.example.echatmobile.system.components.ui.architecture.ListableFragment
 
 class InviteFragment :
     ListableFragment<InviteViewModel, InviteFragmentBinding, UserWithoutPassword>(),

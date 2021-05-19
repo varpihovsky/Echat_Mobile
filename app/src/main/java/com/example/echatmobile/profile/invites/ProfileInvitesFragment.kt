@@ -8,7 +8,7 @@ import com.example.echatmobile.R
 import com.example.echatmobile.databinding.ProfileInvitesFragmentBinding
 import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.model.entities.InviteDTO
-import com.example.echatmobile.system.components.ui.ListableFragment
+import com.example.echatmobile.system.components.ui.architecture.ListableFragment
 
 class ProfileInvitesFragment :
     ListableFragment<ProfileInvitesViewModel, ProfileInvitesFragmentBinding, InviteDTO>(),

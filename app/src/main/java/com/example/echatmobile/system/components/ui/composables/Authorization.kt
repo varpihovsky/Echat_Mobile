@@ -14,7 +14,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,6 +33,16 @@ fun Authorization(
     onBottomTextButtonClick: (() -> Unit)? = null,
     isMainButtonClickable: Boolean = true
 ) {
+    val passwordTransformation = VisualTransformation {
+        TransformedText(
+            AnnotatedString(
+                String(it.map { '*' }.toCharArray()),
+                it.spanStyles,
+                it.paragraphStyles
+            ), OffsetMapping.Identity
+        )
+    }
+
     val usernameState = remember {
         mutableStateOf("")
     }
@@ -37,7 +50,7 @@ fun Authorization(
         mutableStateOf("")
     }
     val passwordDisplayState = remember {
-        mutableStateOf(KeyboardType.Password)
+        mutableStateOf(passwordTransformation)
     }
 
     Box(
@@ -63,8 +76,6 @@ fun Authorization(
                         )
                     }
 
-
-
                     TextField(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -84,16 +95,14 @@ fun Authorization(
                         trailingIcon = {
                             PasswordToggleButton {
                                 if (it) {
-                                    passwordDisplayState.value = KeyboardType.Password
+                                    passwordDisplayState.value = passwordTransformation
                                 } else {
-                                    passwordDisplayState.value = KeyboardType.Text
+                                    passwordDisplayState.value = VisualTransformation.None
                                 }
                             }
                         },
-                        keyboardOptions = KeyboardOptions(
-                            autoCorrect = false,
-                            keyboardType = passwordDisplayState.value
-                        )
+                        keyboardOptions = KeyboardOptions(autoCorrect = false),
+                        visualTransformation = passwordDisplayState.value
                     )
 
                     centerTextButtonText?.let {

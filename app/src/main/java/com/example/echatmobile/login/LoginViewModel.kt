@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.echatmobile.R
 import com.example.echatmobile.model.EchatModel
 import com.example.echatmobile.profile.ProfileFragment.Companion.PROFILE_ID_KEY
-import com.example.echatmobile.system.components.AuthorizationViewModel
+import com.example.echatmobile.system.components.ui.architecture.AuthorizationViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -21,10 +21,10 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onLoginButtonClick(login: String, password: String) {
-        setAuthorizationButtonNotClickable()
+        changeButtonState()
         GlobalScope.launch(Dispatchers.IO) {
             handleIO { handleLogin(login, password) }
-            viewModelScope.launch { setAuthorizationButtonClickable() }
+            viewModelScope.launch { changeButtonState() }
         }
     }
 

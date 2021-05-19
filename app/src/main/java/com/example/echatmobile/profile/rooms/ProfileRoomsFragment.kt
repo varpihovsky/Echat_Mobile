@@ -11,7 +11,7 @@ import com.example.echatmobile.model.entities.ChatDTO
 import com.example.echatmobile.profile.ItemClickObject
 import com.example.echatmobile.profile.ProfileFragment
 import com.example.echatmobile.profile.RoomListAdapter
-import com.example.echatmobile.system.components.ui.ListableFragment
+import com.example.echatmobile.system.components.ui.architecture.ListableFragment
 
 class ProfileRoomsFragment :
     ListableFragment<ProfileRoomsViewModel, ProfileRoomsFragmentBinding, ChatDTO>(),

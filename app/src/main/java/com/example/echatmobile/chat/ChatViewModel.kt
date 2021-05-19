@@ -7,10 +7,10 @@ import com.example.echatmobile.model.EchatModel
 import com.example.echatmobile.model.NoInternetConnectionException
 import com.example.echatmobile.model.entities.MessageDTO
 import com.example.echatmobile.system.BaseEvent
-import com.example.echatmobile.system.components.ListableViewModel
 import com.example.echatmobile.system.components.events.ClearChatFieldEvent
 import com.example.echatmobile.system.components.events.MoveDownEvent
 import com.example.echatmobile.system.components.events.NotificationEvent
+import com.example.echatmobile.system.components.ui.architecture.ListableViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay

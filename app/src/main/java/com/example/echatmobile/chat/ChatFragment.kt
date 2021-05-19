@@ -16,7 +16,7 @@ import com.example.echatmobile.system.BaseEventTypeInterface
 import com.example.echatmobile.system.components.events.ClearChatFieldEvent
 import com.example.echatmobile.system.components.events.MoveDownEvent
 import com.example.echatmobile.system.components.events.NotificationEvent
-import com.example.echatmobile.system.components.ui.ListableFragment
+import com.example.echatmobile.system.components.ui.architecture.ListableFragment
 import com.example.echatmobile.system.services.MessageService
 
 class ChatFragment : ListableFragment<ChatViewModel, ChatFragmentBinding, MessageViewModelDTO>() {

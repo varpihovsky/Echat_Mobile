@@ -12,7 +12,7 @@ import com.example.echatmobile.di.EchatViewModelFactoryComponent
 import com.example.echatmobile.model.entities.ChatDTO
 import com.example.echatmobile.model.entities.UserWithoutPassword
 import com.example.echatmobile.system.BaseEventTypeInterface
-import com.example.echatmobile.system.components.ui.ListableFragment
+import com.example.echatmobile.system.components.ui.architecture.ListableFragment
 
 class NewChatFragment : ListableFragment<NewChatViewModel, NewChatFragmentBinding, Any>(),
     AdapterView.OnItemSelectedListener,

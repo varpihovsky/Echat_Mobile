@@ -7,7 +7,7 @@ import com.example.echatmobile.chat.ChatFragment
 import com.example.echatmobile.invite.InviteFragment
 import com.example.echatmobile.model.EchatModel
 import com.example.echatmobile.model.entities.ChatDTO
-import com.example.echatmobile.system.components.ListableViewModel
+import com.example.echatmobile.system.components.ui.architecture.ListableViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
